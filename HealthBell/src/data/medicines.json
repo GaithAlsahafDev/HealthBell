@@ -1,0 +1,38 @@
+{
+  "medicines": [
+    {
+      "id": "m1",
+      "name": "Aspirin",
+      "dosageMg": 100,
+      "form": "tablet",
+      "doseText": "1 tablet",
+      "times": ["09:00", "21:00"],
+      "instructions": "after_food",
+      "courseStart": "2025-11-01",
+      "courseEnd": "2025-11-10",
+      "notes": "Take after food"
+    },
+    {
+      "id": "m2",
+      "name": "Vitamin D3",
+      "dosageMg": 25,
+      "form": "capsule",
+      "doseText": "1 capsule",
+      "times": ["09:00"],
+      "instructions": "with_water",
+      "courseStart": "2025-11-01"
+    },
+    {
+      "id": "m3",
+      "name": "Amoxicillin",
+      "dosageMg": 500,
+      "form": "tablet",
+      "doseText": "1 tablet",
+      "times": ["09:00", "13:00", "21:00"],
+      "instructions": "before_food",
+      "courseStart": "2025-11-03",
+      "courseEnd": "2025-11-10",
+      "notes": "Complete the course"
+    }
+  ]
+}

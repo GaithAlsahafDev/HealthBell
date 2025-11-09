@@ -1,4 +1,3 @@
-// src/screens/HealthTipsScreen.tsx
 import React, { useRef, useState, useCallback } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
@@ -17,6 +16,8 @@ export default function HealthTipsScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
+
+        {canGoBack && (
         <TouchableOpacity
           onPress={goBack}
           style={styles.backBtn}
@@ -32,6 +33,7 @@ export default function HealthTipsScreen() {
             Back
           </MyText>
         </TouchableOpacity>
+        )}
 
         <MyText style={styles.title}>Health Tips</MyText>
       </View>

@@ -1,4 +1,5 @@
 import React from "react";
+import "./global.css";
 import * as Font from "expo-font";
 import { View, ActivityIndicator } from "react-native";
 import Root from "./src/components/Root";
@@ -17,7 +18,7 @@ export default function App() {
 
   if (!loaded) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator />
       </View>
     );

@@ -1,6 +1,6 @@
 // src/screens/TodayScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../components/Button';
 import MyText from '../components/MyText';
@@ -28,15 +28,15 @@ export default function TodayScreen() {
     const isMissed = item.status === 'missed';
 
     return (
-      <View style={styles.row}>
-        <View style={styles.info}>
-          <MyText style={styles.name}>{item.medicineName}</MyText>
-          <MyText style={styles.time}>
+      <View className="flex-row items-center justify-between py-[10px]">
+        <View className="shrink pr-3">
+          <MyText className="text-[16px] font-semibold text-gray-900">{item.medicineName}</MyText>
+          <MyText className="text-[13px] text-gray-500 mt-0.5">
             {item.time} • {labelFor(item.status)}
           </MyText>
         </View>
 
-        <View style={styles.actions}>
+        <View className="flex-row gap-2">
           <Button
             label="Taken"
             variant="primary"
@@ -55,15 +55,19 @@ export default function TodayScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <MyText style={styles.header}>Today</MyText>
+    <SafeAreaView className="flex-1 bg-white px-4" edges={[]}>
       <FlatList
         data={sorted}
         keyExtractor={it => it.id}
         renderItem={renderItem}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListEmptyComponent={<MyText style={styles.empty}>No doses scheduled for today.</MyText>}
-        contentContainerStyle={sorted.length ? undefined : styles.emptyContainer}
+        ItemSeparatorComponent={() => <View className="h-px bg-gray-200" />}
+        ListEmptyComponent={
+          <View className="flex-1 items-center justify-center">
+            <MyText className="text-gray-500">No doses scheduled for today.</MyText>
+          </View>
+        }
+        // إبقاء التوسيط العمودي عند عدم وجود عناصر
+        contentContainerStyle={sorted.length ? undefined : { flex: 1 }}
       />
     </SafeAreaView>
   );
@@ -75,17 +79,3 @@ function labelFor(s: 'upcoming' | 'taken' | 'missed') {
   if (s === 'missed') return 'Missed';
   return 'Upcoming';
 }
-
-/* ---------- styles ---------- */
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 16 },
-  header: { fontSize: 20, fontWeight: '700', marginBottom: 12 },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10 },
-  info: { flexShrink: 1, paddingRight: 12 },
-  name: { fontSize: 16, fontWeight: '600', color: '#111827' },
-  time: { fontSize: 13, color: '#6b7280', marginTop: 2 },
-  actions: { flexDirection: 'row', gap: 8 },
-  separator: { height: 1, backgroundColor: '#e5e7eb' },
-  emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  empty: { color: '#6b7280' },
-});

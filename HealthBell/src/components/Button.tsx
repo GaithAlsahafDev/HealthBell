@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
 
 interface ButtonProps {
   label: string;
@@ -13,40 +13,18 @@ export default function Button({ label, onPress, variant = 'primary' }: ButtonPr
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={[styles.base, isPrimary ? styles.primary : styles.outline]}
+      className={`h-9 px-3.5 rounded-lg border items-center justify-center min-w-20 ${
+        isPrimary ? 'bg-sky-500 border-sky-500' : 'bg-white border-gray-300'
+      }`}
       activeOpacity={0.7}
     >
-      <Text style={isPrimary ? styles.textPrimary : styles.textOutline}>{label}</Text>
+      <Text
+        className={`font-semibold font-[Poppins-Black] ${
+          isPrimary ? 'text-white' : 'text-gray-700'
+        }`}
+      >
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    height: 36,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 80,
-  },
-  primary: {
-    backgroundColor: '#0EA5E9',
-    borderColor: '#0EA5E9',
-  },
-  outline: {
-    backgroundColor: '#fff',
-    borderColor: '#d1d5db',
-  },
-  textPrimary: {
-    color: '#fff',
-    fontWeight: '600',
-    fontFamily: 'Poppins-Black',
-  },
-  textOutline: {
-    color: '#374151',
-    fontWeight: '600',
-    fontFamily: 'Poppins-Black',
-  },
-});

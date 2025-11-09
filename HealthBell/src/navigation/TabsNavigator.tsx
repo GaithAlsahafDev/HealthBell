@@ -18,7 +18,6 @@ export default function TabsNavigator() {
         name="Today"
         component={TodayScreen}
         options={{
-          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="calendar-today" color={color} size={size} />
           ),
@@ -40,7 +39,6 @@ export default function TabsNavigator() {
         name="HealthTips"
         component={HealthTipsScreen}
         options={{
-          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="heart-pulse" color={color} size={size} />
           ),
@@ -51,7 +49,6 @@ export default function TabsNavigator() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account" color={color} size={size} />
           ),

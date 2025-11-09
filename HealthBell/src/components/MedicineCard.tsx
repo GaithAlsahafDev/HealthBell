@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, TouchableOpacity, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MyText from './MyText';
 
@@ -19,35 +19,16 @@ export default function MedicineCard({ name, dosageMg, frequency, hint, onPress 
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={Platform.OS === 'ios' ? 0.7 : 0.8}
-      style={styles.card}
+      className="flex-row items-center gap-3 p-[14px] rounded-2xl bg-white shadow-md android:elevation-2"
       accessibilityRole="button"
       accessibilityLabel={`Open ${name} details`}
     >
-      <View style={styles.content}>
-        <MyText style={styles.name}>{name}</MyText>
-        <MyText style={styles.sub}>{subtitle}</MyText>
+      <View className="flex-1">
+        <MyText className="text-[16px] font-semibold text-gray-900">{name}</MyText>
+        <MyText className="text-[12px] text-gray-500 mt-0.5">{subtitle}</MyText>
       </View>
 
       <MaterialCommunityIcons name="chevron-right" size={22} color="#6b7280" />
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 14,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-  },
-  content: { flex: 1 },
-  name: { fontSize: 16, fontWeight: '600', color: '#111827' },
-  sub: { fontSize: 12, color: '#6b7280', marginTop: 2 },
-});

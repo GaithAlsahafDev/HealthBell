@@ -1,7 +1,7 @@
 // src/screens/medicines/AddEditMedicineScreen.tsx
 import React, { useMemo, useState, useEffect } from 'react';
 import {
-  View, StyleSheet, TextInput, Alert, ScrollView, TouchableOpacity
+  View, TextInput, Alert, ScrollView, TouchableOpacity
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { MedicinesStackNavProps } from '../../navigation/types';
@@ -108,36 +108,36 @@ export default function AddEditMedicineScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <MyText style={styles.title}>{editId ? 'Edit medicine' : 'Add medicine'}</MyText>
+    <ScrollView keyboardShouldPersistTaps="handled" className="p-4 bg-white">
+      <MyText className="text-[20px] font-bold mb-3 text-gray-900">{editId ? 'Edit medicine' : 'Add medicine'}</MyText>
 
       {/* اسم الدواء - إجباري */}
       <Field label="Medicine name *">
         <TextInput
           value={name}
           onChangeText={setName}
-          style={styles.input}
+          className="h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
           placeholder="Aspirin"
         />
       </Field>
 
       {/* الجرعة: كمية + وحدة */}
       <Field label="Dosage">
-        <View style={styles.row}>
+        <View className="flex-row items-center">
           <TextInput
             value={doseAmount}
             onChangeText={setDoseAmount}
-            style={styles.inputFlexRight}
+            className="flex-1 mr-2 h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
             placeholder="500"
             keyboardType="numeric"
           />
           <UnitPicker value={doseUnit} onChange={setDoseUnit} />
         </View>
-        <MyText style={styles.hint}>Optional: free text</MyText>
+        <MyText className="text-[11px] text-gray-400 mt-1.5 mb-1.5">Optional: free text</MyText>
         <TextInput
           value={doseText}
           onChangeText={setDoseText}
-          style={styles.input}
+          className="h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
           placeholder="1 tablet"
         />
       </Field>
@@ -147,7 +147,7 @@ export default function AddEditMedicineScreen() {
         <TextInput
           value={timesCsv}
           onChangeText={setTimesCsv}
-          style={styles.input}
+          className="h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
           placeholder="09:00, 13:00, 21:00"
           autoCapitalize="none"
         />
@@ -155,14 +155,14 @@ export default function AddEditMedicineScreen() {
 
       {/* الأيام */}
       <Field label="Days">
-        <View style={styles.rowBetween}>
-          <TouchableOpacity onPress={toggleEveryDay} style={[styles.switch, everyDay && styles.switchOn]}>
-            <View style={[styles.dot, everyDay && styles.dotOn]} />
+        <View className="flex-row items-center justify-between mb-2">
+          <TouchableOpacity onPress={toggleEveryDay} className={`w-[46px] h-[26px] rounded-full p-[3px] justify-center ${everyDay ? 'bg-sky-500' : 'bg-gray-200'}`}>
+            <View className={`w-5 h-5 rounded-[10px] ${everyDay ? 'bg-white self-end' : 'bg-gray-400 self-start'}`} />
           </TouchableOpacity>
-          <MyText style={styles.everyDayText}>Every day</MyText>
+          <MyText className="text-gray-900">Every day</MyText>
         </View>
 
-        <View style={styles.chipsWrap}>
+        <View className="flex-row flex-wrap gap-2 mt-2">
           {WEEKDAYS.map(d => {
             const active = everyDay || days.includes(d);
             return (
@@ -180,18 +180,18 @@ export default function AddEditMedicineScreen() {
 
       {/* المدة */}
       <Field label="Treatment duration">
-        <View style={styles.row}>
+        <View className="flex-row items-center">
           <TextInput
             value={courseStart}
             onChangeText={setCourseStart}
-            style={styles.inputFlexRight}
+            className="flex-1 mr-2 h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
             placeholder="Start YYYY-MM-DD"
             autoCapitalize="none"
           />
           <TextInput
             value={courseEnd}
             onChangeText={setCourseEnd}
-            style={styles.inputFlex}
+            className="flex-1 h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
             placeholder="End YYYY-MM-DD"
             autoCapitalize="none"
           />
@@ -204,24 +204,24 @@ export default function AddEditMedicineScreen() {
       </Field>
 
       {/* أزرار الإجراء */}
-      <View style={styles.actions}>
-        <TouchableOpacity style={[styles.btn, styles.btnPrimary]} onPress={onSave} accessibilityRole="button">
+      <View className="flex-row gap-3 mt-2 mb-3">
+        <TouchableOpacity className="flex-1 h-12 rounded-[10px] items-center justify-center flex-row gap-2 bg-sky-500" onPress={onSave} accessibilityRole="button">
           <MaterialCommunityIcons name="content-save" size={18} color="#fff" />
-          <MyText style={styles.btnText}>{editId ? 'Save changes' : 'Add medicine'}</MyText>
+          <MyText className="text-white font-bold">{editId ? 'Save changes' : 'Add medicine'}</MyText>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.btn, styles.btnGhost]} onPress={() => navigation.goBack()} accessibilityRole="button">
-          <MyText style={styles.btnTextCancel}>Cancel</MyText>
+        <TouchableOpacity className="flex-1 h-12 rounded-[10px] items-center justify-center flex-row gap-2 bg-gray-100" onPress={() => navigation.goBack()} accessibilityRole="button">
+          <MyText className="text-gray-900 font-bold">Cancel</MyText>
         </TouchableOpacity>
       </View>
 
       {/* زر اختياري: مسح باركود */}
-      <TouchableOpacity style={[styles.btn, styles.btnOutline]} onPress={onScanBarcode} accessibilityRole="button">
+      <TouchableOpacity className="flex-row gap-2 h-12 rounded-[10px] items-center justify-center bg-white border border-sky-500" onPress={onScanBarcode} accessibilityRole="button">
         <MaterialCommunityIcons name="barcode-scan" size={18} color="#0EA5E9" />
-        <MyText style={styles.btnTextOutline}>Scan barcode</MyText>
+        <MyText className="text-sky-500 font-bold">Scan barcode</MyText>
       </TouchableOpacity>
 
-      <View style={styles.sp24} />
+      <View className="h-6" />
     </ScrollView>
   );
 }
@@ -229,8 +229,8 @@ export default function AddEditMedicineScreen() {
 /* ---------- عناصر مساعدة ---------- */
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <View style={styles.fieldWrap}>
-      <MyText style={styles.label}>{label}</MyText>
+    <View className="mb-[14px]">
+      <MyText className="text-[12px] text-gray-500 mb-1.5">{label}</MyText>
       {children}
     </View>
   );
@@ -238,15 +238,15 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function UnitPicker({ value, onChange }: { value: Unit; onChange: (u: Unit) => void }) {
   return (
-    <View style={styles.unitWrap}>
+    <View className="flex-row flex-wrap gap-1.5">
       {UNITS.map(u => (
         <TouchableOpacity
           key={u}
           onPress={() => onChange(u)}
-          style={[styles.unit, value === u && styles.unitActive]}
+          className={`h-9 px-2.5 rounded-lg border items-center justify-center mb-1.5 ${value === u ? 'bg-sky-500 border-sky-500' : 'bg-white border-gray-300'}`}
           accessibilityRole="button"
         >
-          <MyText style={[styles.unitText, value === u && styles.unitTextActive]}>{u}</MyText>
+          <MyText className={`font-semibold ${value === u ? 'text-white' : 'text-gray-700'}`}>{u}</MyText>
         </TouchableOpacity>
       ))}
     </View>
@@ -260,10 +260,10 @@ function Chip({
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled}
-      style={[styles.chip, active && styles.chipActive, disabled && styles.disabled]}
+      className={`h-[34px] px-3 rounded-full border items-center justify-center ${active ? 'bg-sky-500 border-sky-500' : 'bg-white border-gray-300'} ${disabled ? 'opacity-50' : ''}`}
       accessibilityRole="button"
     >
-      <MyText style={[styles.chipText, active && styles.chipTextActive]}>{label}</MyText>
+      <MyText className={`text-[12px] font-semibold ${active ? 'text-white' : 'text-gray-700'}`}>{label}</MyText>
     </TouchableOpacity>
   );
 }
@@ -277,88 +277,23 @@ function InstructionsPicker({
     { key: 'with_water', label: 'With water' },
   ];
   return (
-    <View style={styles.chipsWrap}>
+    <View className="flex-row flex-wrap gap-2 mt-2">
       {options.map(opt => {
         const active = value === opt.key;
         return (
           <TouchableOpacity
             key={opt.key}
             onPress={() => onChange(opt.key)}
-            style={[styles.chip, active && styles.chipActive]}
+            className={`h-[34px] px-3 rounded-full border items-center justify-center ${active ? 'bg-sky-500 border-sky-500' : 'bg-white border-gray-300'}`}
             accessibilityRole="button"
           >
-            <MyText style={[styles.chipText, active && styles.chipTextActive]}>{opt.label}</MyText>
+            <MyText className={`text-[12px] font-semibold ${active ? 'text-white' : 'text-gray-700'}`}>{opt.label}</MyText>
           </TouchableOpacity>
         );
       })}
-      <TouchableOpacity onPress={() => onChange('')} style={styles.chip} accessibilityRole="button">
-        <MyText style={styles.chipText}>None</MyText>
+      <TouchableOpacity onPress={() => onChange('')} className="h-[34px] px-3 rounded-full border bg-white border-gray-300 items-center justify-center" accessibilityRole="button">
+        <MyText className="text-[12px] font-semibold text-gray-700">None</MyText>
       </TouchableOpacity>
     </View>
   );
 }
-
-/* ---------- styles ---------- */
-const styles = StyleSheet.create({
-  container: { padding: 16, backgroundColor: '#fff' },
-  title: { fontSize: 20, fontWeight: '700', marginBottom: 12, color: '#111827' },
-  label: { fontSize: 12, color: '#6b7280', marginBottom: 6 },
-  fieldWrap: { marginBottom: 14 },
-
-  input: {
-    height: 44, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10,
-    paddingHorizontal: 12, backgroundColor: '#fff', color: '#111827',
-  },
-  inputFlexRight: { flex: 1, marginRight: 8, height: 44, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 12, backgroundColor: '#fff', color: '#111827' },
-  inputFlex: { flex: 1, height: 44, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 12, backgroundColor: '#fff', color: '#111827' },
-
-  row: { flexDirection: 'row', alignItems: 'center' },
-  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-
-  // Units
-  unitWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  unit: {
-    height: 36, paddingHorizontal: 10, borderRadius: 8, borderWidth: 1, borderColor: '#d1d5db',
-    alignItems: 'center', justifyContent: 'center', marginBottom: 6,
-  },
-  unitActive: { backgroundColor: '#0EA5E9', borderColor: '#0EA5E9' },
-  unitText: { color: '#374151', fontWeight: '600' },
-  unitTextActive: { color: '#fff' },
-
-  // Days chips
-  chipsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
-  chip: {
-    height: 34, paddingHorizontal: 12, borderRadius: 9999, borderWidth: 1, borderColor: '#d1d5db',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  chipActive: { backgroundColor: '#0EA5E9', borderColor: '#0EA5E9' },
-  chipText: { color: '#374151', fontWeight: '600', fontSize: 12 },
-  chipTextActive: { color: '#fff' },
-  disabled: { opacity: 0.5 },
-
-  // Switch (Every day)
-  switch: {
-    width: 46, height: 26, borderRadius: 9999, backgroundColor: '#e5e7eb', padding: 3, justifyContent: 'center',
-  },
-  switchOn: { backgroundColor: '#0EA5E9' },
-  dot: { width: 20, height: 20, borderRadius: 10, backgroundColor: '#9ca3af', alignSelf: 'flex-start' },
-  dotOn: { backgroundColor: '#fff', alignSelf: 'flex-end' },
-  everyDayText: { color: '#111827' },
-
-  // Actions
-  actions: { flexDirection: 'row', gap: 12, marginTop: 8, marginBottom: 12 },
-  btn: {
-    flex: 1, height: 48, borderRadius: 10, alignItems: 'center', justifyContent: 'center',
-    flexDirection: 'row', gap: 8,
-  },
-  btnPrimary: { backgroundColor: '#0EA5E9' },
-  btnGhost: { backgroundColor: '#f3f4f6' },
-  btnOutline: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#0EA5E9' },
-  btnText: { color: '#fff', fontWeight: '700' },
-  btnTextCancel: { color: '#111827', fontWeight: '700' },
-  btnTextOutline: { color: '#0EA5E9', fontWeight: '700' },
-
-  hint: { fontSize: 11, color: '#9ca3af', marginTop: 6, marginBottom: 6 },
-
-  sp24: { height: 24 },
-});

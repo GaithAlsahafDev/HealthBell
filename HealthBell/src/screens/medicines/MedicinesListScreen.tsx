@@ -1,6 +1,5 @@
-// src/screens/medicines/MedicinesListScreen.tsx
 import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -31,17 +30,20 @@ export default function MedicinesListScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
-      <View style={styles.container}>
+    <SafeAreaView className="flex-1 bg-white" edges={[]}>
+      <View className="flex-1">
         <FlatList
           data={medicines}
           keyExtractor={(m) => m.id}
           renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={{
+            paddingBottom: 96,
+            rowGap: 12,
+            paddingTop: 0,
+          }}
         />
 
-        {/* Extended FAB */}
-        <View style={styles.fab}>
+        <View className="absolute right-4 bottom-6 bg-sky-500 px-4 h-12 rounded-full justify-center items-center flex-row gap-1.5">
           <MaterialCommunityIcons name="plus" size={20} color="#fff" />
           <Button label="Add medicine" onPress={openAdd} />
         </View>
@@ -49,23 +51,3 @@ export default function MedicinesListScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#fff' },
-  container: { flex: 1, padding: 16 },
-  listContent: { paddingBottom: 96, rowGap: 12 },
-  fab: {
-    position: 'absolute',
-    right: 16,
-    bottom: 24,
-    backgroundColor: '#0EA5E9',
-    paddingHorizontal: 16,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 6,
-    elevation: 4,
-  },
-});

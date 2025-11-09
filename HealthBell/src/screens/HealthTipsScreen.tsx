@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,13 +14,13 @@ export default function HealthTipsScreen() {
   }, [canGoBack]);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <View style={styles.header}>
+    <SafeAreaView className="flex-1 bg-white" edges={[]}>
+      <View className="flex-row items-center px-3 py-2 bg-gray-50 border-b border-gray-200">
 
         {canGoBack && (
         <TouchableOpacity
           onPress={goBack}
-          style={styles.backBtn}
+          className="flex-row items-center gap-1 p-[6px]"
           disabled={!canGoBack}
           accessibilityRole="button"
         >
@@ -29,13 +29,11 @@ export default function HealthTipsScreen() {
             size={22}
             color={canGoBack ? '#007AFF' : '#9CA3AF'}
           />
-          <MyText style={[styles.backText, !canGoBack && styles.backTextDisabled]}>
+          <MyText className={`text-[15px] font-medium ${!canGoBack ? 'text-gray-400' : 'text-[#007AFF]'}`}>
             Back
           </MyText>
         </TouchableOpacity>
         )}
-
-        <MyText style={styles.title}>Health Tips</MyText>
       </View>
 
       <WebView
@@ -43,26 +41,8 @@ export default function HealthTipsScreen() {
         source={{ uri: 'https://www.healthline.com/health' }}
         startInLoadingState
         onNavigationStateChange={(nav) => setCanGoBack(nav.canGoBack)}
-        style={styles.webview}
+        className="flex-1"
       />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: '#F9FAFB',
-    borderBottomWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  backBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, padding: 6 },
-  backText: { color: '#007AFF', fontSize: 15, fontWeight: '500' },
-  backTextDisabled: { color: '#9CA3AF' },
-  title: { fontSize: 16, fontWeight: '600', marginLeft: 8, color: '#111827' },
-  webview: { flex: 1 },
-});

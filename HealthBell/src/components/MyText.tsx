@@ -1,17 +1,17 @@
 import React from 'react';
-import { Text, TextProps, StyleSheet } from 'react-native';
+import { Text, TextProps } from 'react-native';
 
-export default function MyText({ style, children, ...rest }: TextProps) {
+interface MyTextProps extends TextProps {
+  className?: string;
+}
+
+export default function MyText({ className, children, ...rest }: MyTextProps) {
   return (
-    <Text {...rest} style={[styles.base, style]}>
+    <Text
+      {...rest}
+      className={`text-gray-900 font-[Poppins-Regular] ${className || ''}`}
+    >
       {children}
     </Text>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    fontFamily: 'Poppins-Regular', // حمّل الخط عبر expo-font إن كنت تستعمله
-    color: '#111827',
-  },
-});

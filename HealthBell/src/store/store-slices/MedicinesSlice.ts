@@ -17,10 +17,7 @@ const medicinesSlice = createSlice({
         },
         clearAll: () => {
             return [];
-        },
-        replaceAll: (state, action: PayloadAction<Medicine[]>) => {
-            return [...action.payload];
-        },
+        }
     },
 });
 

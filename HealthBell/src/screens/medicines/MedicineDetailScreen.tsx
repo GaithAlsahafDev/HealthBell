@@ -6,21 +6,18 @@ import type { MedicinesStackNavProps } from '../../navigation/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Button from '../../components/Button';
 import MyText from '../../components/MyText';
-
-const { medicines } = require('../../data/medicines.json') as {
-  medicines: {
-    id: string; name: string; dosageMg?: number; form?: string; doseText?: string; times?: string[];
-    instructions?: 'before_food' | 'after_food' | 'with_water' | string;
-    courseStart?: string; courseEnd?: string; notes?: string;
-  }[];
-};
+import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
+import { remove } from '../../store/store-slices/MedicinesSlice';
 
 const MedicineDetailScreen = () => {
   const navigation = useNavigation<MedicinesStackNavProps<'MedicineDetail'>['navigation']>();
   const route = useRoute<MedicinesStackNavProps<'MedicineDetail'>['route']>();
   const data = route.params?.data;
 
-  const med = useMemo(() => medicines.find(m => m.id === data?.id), [data?.id]);
+  const dispatch = useAppDispatch();
+  const medicines = useAppSelector(s => s.medicines) as Medicine[];
+
+  const med = useMemo(() => medicines.find(m => m.id === data?.id), [data?.id, medicines]);
 
   if (!data || !med) {
     return (
@@ -46,7 +43,7 @@ const MedicineDetailScreen = () => {
     : med.courseStart ? `Since ${med.courseStart}` : '—';
 
   const onEdit = () => navigation.navigate('AddEditMedicine', { editId: med.id });
-  const onDelete = () => { console.log('Delete', med.id); navigation.goBack(); };
+  const onDelete = () => { dispatch(remove(med.id)); console.log('Delete', med.id); navigation.goBack(); };
 
   return (
     <View className="flex-1 bg-white p-4">

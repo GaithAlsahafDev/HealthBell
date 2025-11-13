@@ -7,22 +7,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { MedicinesStackNavProps } from '../../navigation/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MyText from '../../components/MyText';
-
-// بيانات موك من JSON
-const { medicines } = require('../../data/medicines.json') as {
-  medicines: {
-    id: string;
-    name: string;
-    dosageMg?: number;        // سنحوّله من (amount + unit) إذا كانت الوحدة mg
-    form?: string;
-    doseText?: string;
-    times?: string[];         // ["09:00","13:00","21:00"]
-    instructions?: 'before_food' | 'after_food' | 'with_water' | string;
-    courseStart?: string;     // "YYYY-MM-DD"
-    courseEnd?: string;
-    notes?: string;
-  }[];
-};
+import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
+import { add, update } from '../../store/store-slices/MedicinesSlice';
 
 const UNITS = ['mg', 'ml', 'g', 'mcg', 'drops', 'tablet', 'capsule'] as const;
 type Unit = (typeof UNITS)[number];
@@ -33,7 +19,10 @@ export default function AddEditMedicineScreen() {
   const route = useRoute<MedicinesStackNavProps<'AddEditMedicine'>['route']>();
   const editId = route.params?.editId;
 
-  const editing = useMemo(() => medicines.find(m => m.id === editId), [editId]);
+  const dispatch = useAppDispatch();
+  const medicines = useAppSelector(s => s.medicines) as Medicine[];
+
+  const editing = useMemo(() => medicines.find(m => m.id === editId), [editId, medicines]);
 
   // الحالة
   const [name, setName] = useState(editing?.name ?? '');
@@ -87,25 +76,59 @@ export default function AddEditMedicineScreen() {
   const onSave = () => {
     if (!validate()) return;
 
-    const amountNum = doseAmount ? Number(doseAmount) : undefined;
-    const dosageMg = doseUnit === 'mg' && amountNum ? amountNum : undefined;
+    const trimmedName = name.trim();
+    const trimmedDoseText = doseText.trim();
+    const trimmedCourseStart = courseStart.trim();
+    const trimmedCourseEnd = courseEnd.trim();
 
-    const payload = {
+    const hasAmount = doseAmount.trim().length > 0;
+    const amountNum = hasAmount ? Number(doseAmount) : null;
+    const dosageMg = doseUnit === 'mg' && amountNum !== null ? amountNum : null;
+
+    let doseTextFinal: string | null = null;
+    if (trimmedDoseText.length > 0) {
+      doseTextFinal = trimmedDoseText;
+    } else if (doseUnit !== 'mg' && amountNum !== null) {
+      doseTextFinal = `${amountNum} ${doseUnit}`;
+    }
+
+    const timesArray = timesCsv
+      ? (timesCsv
+          .split(',')
+          .map(t => t.trim())
+          .filter(t => t.length > 0) as HHmm[])
+      : ([] as HHmm[]);
+    const hasTimes = timesArray.length > 0;
+
+    const normalizedInstructions: MedicineInstruction | null =
+      instructions && instructions.length > 0
+        ? (instructions as MedicineInstruction)
+        : "none";
+
+    const payload: Medicine = {
       id: editing?.id ?? `m_${Date.now()}`,
-      name: name.trim(),
-      dosageMg,                               // رقمي إذا mg
-      doseText: doseText || (doseUnit !== 'mg' && amountNum ? `${amountNum} ${doseUnit}` : doseText) || undefined,
-      times: timesCsv ? timesCsv.split(',').map(t => t.trim()).filter(Boolean) : undefined,
-      days: everyDay ? [...WEEKDAYS] : days,
-      courseStart: courseStart || undefined,
-      courseEnd: courseEnd || undefined,
-      instructions: instructions || undefined,
+      name: trimmedName,
+      ...(dosageMg !== null ? { dosageMg } : {}),
+      ...(doseTextFinal !== null ? { doseText: doseTextFinal } : {}),
+      ...(hasTimes ? { times: timesArray } : {}),
+      ...(trimmedCourseStart.length > 0 ? { courseStart: trimmedCourseStart } : {}),
+      ...(trimmedCourseEnd.length > 0 ? { courseEnd: trimmedCourseEnd } : {}),
+      ...(normalizedInstructions !== "none"
+        ? { instructions: normalizedInstructions }
+        : {}),
     };
+
+    if (editId) {
+      dispatch(update(payload));
+    } else {
+      dispatch(add(payload));
+    }
 
     console.log(editId ? 'UPDATE MEDICINE' : 'CREATE MEDICINE', payload);
     Alert.alert(editId ? 'Medicine updated' : 'Medicine added');
     navigation.goBack();
   };
+
 
   return (
     <ScrollView keyboardShouldPersistTaps="handled" className="p-4 bg-white">

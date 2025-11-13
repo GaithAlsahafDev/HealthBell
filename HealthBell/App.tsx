@@ -1,3 +1,4 @@
+// App.tsx
 import React from "react";
 import "./global.css";
 import * as Font from "expo-font";

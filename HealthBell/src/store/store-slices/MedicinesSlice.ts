@@ -1,3 +1,4 @@
+// src/store/store-slices/MedicinesSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: Medicine[] = [];

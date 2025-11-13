@@ -1,3 +1,4 @@
+// src/types-env.d.ts
 type HHmm = `${number}${number}:${number}${number}`;
 
 

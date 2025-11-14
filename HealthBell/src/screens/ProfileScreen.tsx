@@ -5,16 +5,22 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../components/Button';
 import ProfileCard from '../components/ProfileCard';
 import MyText from '../components/MyText'; // ← استدعاء مكون النص الموحد
+import { signOut } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
 const profile: { name: string; email: string } = require('../data/profile.json');
 
 export default function ProfileScreen() {
-  const onLogout = () => {
-    console.log('Logout');
+  const onLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.log('Logout error:', error);
+    }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={[]}>
+    <SafeAreaView className="flex-1 bg-white" edges={[]}> 
       <View className="flex-1 px-4">
         <View className="flex-1 items-center justify-start gap-5 mt-[60px]">
           <ProfileCard name={profile.name} email={profile.email} />

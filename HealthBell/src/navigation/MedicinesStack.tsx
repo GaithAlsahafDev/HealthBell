@@ -13,10 +13,10 @@ export default function MedicinesStack() {
   return (
     <Stack.Navigator initialRouteName="MedicinesList">
       <Stack.Screen
-  name="MedicinesList"
-  component={MedicinesListScreen}
-  options={{ title: 'My Medicines' }}
-/>
+        name="MedicinesList"
+        component={MedicinesListScreen}
+        options={{ title: 'My Medicines' }}
+      />
       <Stack.Screen
         name="AddEditMedicine"
         component={AddEditMedicineScreen}

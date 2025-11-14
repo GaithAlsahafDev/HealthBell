@@ -1,5 +1,5 @@
 // src/components/Root.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import TabsNavigator from '../navigation/TabsNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,14 +10,37 @@ import { PersistGate } from "redux-persist/integration/react";
 import { bootstrap } from "../store/thunks/bootstrap";
 import { triggerOutboxSync } from "../store/middleware/syncMiddleware";
 
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../config/firebase';
+import { View, ActivityIndicator } from 'react-native';
+import AuthStack from '../navigation/AuthStack';
 
 const queryClient = new QueryClient();
 
 export default function Root() {
-  React.useEffect(() => {
+  const [authChecked, setAuthChecked] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthChecked(true);
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     (store.dispatch as any)(bootstrap());
     store.dispatch(triggerOutboxSync());
   }, []);
+
+  if (!authChecked) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaProvider>
@@ -25,7 +48,7 @@ export default function Root() {
         <PersistGate persistor={persistor}>
         <NavigationContainer>
           <QueryClientProvider client={queryClient}>
-            <TabsNavigator />
+            {user ? <TabsNavigator /> : <AuthStack />}
           </QueryClientProvider>
         </NavigationContainer>
         </PersistGate>

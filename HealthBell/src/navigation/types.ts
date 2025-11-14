@@ -19,6 +19,10 @@ export type TabsParamList = {
   Profile: undefined;
 };
 
+export type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+};
 
 /** Screen prop helpers */
 export type MedicinesStackNavProps<T extends keyof MedicinesStackParamList> =
@@ -29,3 +33,6 @@ export type TabsNavProps<T extends keyof TabsParamList> =
 
 export type RootStackNavProps<T extends keyof RootStackParamList> =
   StackScreenProps<RootStackParamList, T>;
+
+export type AuthStackNavProps<T extends keyof AuthStackParamList> =
+  StackScreenProps<AuthStackParamList, T>;

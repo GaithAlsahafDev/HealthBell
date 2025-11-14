@@ -1,0 +1,18 @@
+// src/config/firebase.ts
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAPswGg-dn8osHXZdmorCzsAnkNNUy6orY",
+  authDomain: "healthbell-d97ce.firebaseapp.com",
+  projectId: "healthbell-d97ce",
+  storageBucket: "healthbell-d97ce.firebasestorage.app",
+  messagingSenderId: "667659001492",
+  appId: "1:667659001492:web:9d1a663ece2d80051e5e81",
+};
+
+const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+export const db = getFirestore(app);

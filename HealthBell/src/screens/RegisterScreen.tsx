@@ -5,14 +5,18 @@ import MyText from '../components/MyText';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import type { AuthStackNavProps } from '../navigation/types';
+import { useAppDispatch } from '../hooks/reduxHooks';
+import { setUser } from '../store/store-slices/AuthSlice';
 
 export default function RegisterScreen({ navigation }: AuthStackNavProps<'Register'>) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useAppDispatch();
 
   const handleRegister = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      dispatch(setUser({ uid: cred.user.uid, email: cred.user.email }));
     } catch (error: any) {
       Alert.alert('Register Error', error.message);
     }

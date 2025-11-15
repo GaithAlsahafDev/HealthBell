@@ -1,4 +1,4 @@
-// src/screens/ProfileScreen.tsx
+// src/screens/ProfileScreen.tsx 
 import React from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,13 +7,17 @@ import ProfileCard from '../components/ProfileCard';
 import MyText from '../components/MyText'; // ← استدعاء مكون النص الموحد
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
-
-const profile: { name: string; email: string } = require('../data/profile.json');
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
+import { clearUser, selectAuthEmail } from '../store/store-slices/AuthSlice';
 
 export default function ProfileScreen() {
+  const dispatch = useAppDispatch();
+  const email = useAppSelector(selectAuthEmail);
+
   const onLogout = async () => {
     try {
       await signOut(auth);
+      dispatch(clearUser());
     } catch (error) {
       console.log('Logout error:', error);
     }
@@ -23,7 +27,7 @@ export default function ProfileScreen() {
     <SafeAreaView className="flex-1 bg-white" edges={[]}> 
       <View className="flex-1 px-4">
         <View className="flex-1 items-center justify-start gap-5 mt-[60px]">
-          <ProfileCard name={profile.name} email={profile.email} />
+          <ProfileCard name={email ?? ''} email={email ?? ''} />
 
           <View className="w-4/5 max-w-[340px] mt-3">
             <View className="w-full">

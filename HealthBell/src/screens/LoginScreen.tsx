@@ -5,14 +5,18 @@ import MyText from '../components/MyText';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import type { AuthStackNavProps } from '../navigation/types';
+import { useAppDispatch } from '../hooks/reduxHooks';
+import { setUser } from '../store/store-slices/AuthSlice';
 
 export default function LoginScreen({ navigation }: AuthStackNavProps<'Login'>) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useAppDispatch();
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      dispatch(setUser({ uid: cred.user.uid, email: cred.user.email }));
     } catch (error: any) {
       Alert.alert('Login Error', error.message);
     }

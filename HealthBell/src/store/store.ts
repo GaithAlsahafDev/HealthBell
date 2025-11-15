@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import medicinesReducer from "./store-slices/MedicinesSlice";
 import metaReducer from "./store-slices/MetaSlice";
 import outboxReducer from "./store-slices/OutboxSlice";
+import authReducer from "./store-slices/AuthSlice";
 import { syncMiddleware } from "./middleware/syncMiddleware";
 
 const persistConfig = {
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
   medicines: medicinesReducer,
   meta: metaReducer,
   outbox: outboxReducer,
-  // أضف سلايزات أخرى لاحقًا مثل: auth: authReducer,
+  auth: authReducer,
+  
 });
 
 // تعريف Rootstate اعتمادًا على rootReducer وليس على store

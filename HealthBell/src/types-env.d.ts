@@ -37,6 +37,9 @@ interface Medicine {
 
   courseEnd?: string;
   notes?: string;
+
+  everyDay?: boolean;
+  days?: string[];
 }
 
 

@@ -10,8 +10,6 @@ import Button from '../../components/Button';
 import { useAppSelector } from '../../hooks/reduxHooks';
 import MyText from '../../components/MyText';
 
-//const API_URL = '../../data/medicines.json';
-const API_URL = '';
 
 export default function MedicinesListScreen() {
   const navigation = useNavigation<MedicinesStackNavProps<'MedicinesList'>['navigation']>();

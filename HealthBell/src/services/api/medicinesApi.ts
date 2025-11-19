@@ -1,3 +1,4 @@
+// src/services/api/medicinesApi.ts
 import { api } from "./axios";
 
 export const medicinesApi = {

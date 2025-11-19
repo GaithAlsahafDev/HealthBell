@@ -16,3 +16,16 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+
+
+// -------------------
+// Emulator connections
+// -------------------
+import { connectFirestoreEmulator } from "firebase/firestore";
+import { connectAuthEmulator } from "firebase/auth";
+
+if (__DEV__) {
+  connectFirestoreEmulator(db, "10.0.2.2", 8085);
+  connectAuthEmulator(auth, "http://10.0.2.2:9099");
+}

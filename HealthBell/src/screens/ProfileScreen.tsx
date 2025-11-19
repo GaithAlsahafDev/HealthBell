@@ -1,26 +1,48 @@
 // src/screens/ProfileScreen.tsx 
 import React from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../components/Button';
 import ProfileCard from '../components/ProfileCard';
-import MyText from '../components/MyText'; // ← استدعاء مكون النص الموحد
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { clearUser, selectAuthEmail } from '../store/store-slices/AuthSlice';
+import { clearAll } from '../store/store-slices/MedicinesSlice';
+import { clearOutbox } from '../store/store-slices/OutboxSlice';
+import { resetMeta } from '../store/store-slices/MetaSlice';
 
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
   const email = useAppSelector(selectAuthEmail);
+  const outbox = useAppSelector(s => s.outbox);
 
-  const onLogout = async () => {
+  const performLogout = async () => {
     try {
       await signOut(auth);
       dispatch(clearUser());
+      dispatch(clearAll());
+      dispatch(clearOutbox());
+      dispatch(resetMeta());
     } catch (error) {
       console.log('Logout error:', error);
     }
+  };
+
+  const onLogout = () => {
+    if (outbox.length > 0) {
+      Alert.alert(
+        "Pending operations",
+        "There are unsynced operations waiting to be sent to the server. Logging out now will lose them permanently. Do you want to continue?",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Log out anyway", style: "destructive", onPress: performLogout }
+        ]
+      );
+      return;
+    }
+
+    performLogout();
   };
 
   return (

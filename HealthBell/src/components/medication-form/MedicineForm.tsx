@@ -7,7 +7,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MyText from '../MyText';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { Field, UnitPicker, Chip, InstructionsPicker, type Unit } from './MedicineFormUI';
+import { Field, Chip, InstructionsPicker, UNITS, type Unit } from './MedicineFormUI';
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from '@react-native-picker/picker';
+
 
 const WEEKDAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as const;
 
@@ -26,18 +29,24 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
 
   // الحالة
   // الجرعة = كمية + وحدة
-  const [doseAmount, setDoseAmount] = useState(editing?.dosageMg ? String(editing.dosageMg) : '');
+  const [doseAmount, setDoseAmount] = useState('');
   const [doseUnit, setDoseUnit] = useState<Unit>('mg');
   // النص الحر للجرعة مثل "1 tablet"
   const [doseText, setDoseText] = useState(editing?.doseText ?? '');
   // الأوقات
-  const [timesCsv, setTimesCsv] = useState(editing?.times?.join(', ') ?? ''); // "09:00, 13:00"
+  const [times, setTimes] = useState<HHmm[]>(editing?.times ?? ([] as HHmm[]));
+  const [newTime, setNewTime] = useState('');
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [timePickerValue, setTimePickerValue] = useState(new Date());
+
   // الأيام
   const [everyDay, setEveryDay] = useState(true);
   const [days, setDays] = useState<string[]>([...WEEKDAYS]);
   // المدة
   const [courseStart, setCourseStart] = useState(editing?.courseStart ?? '');
   const [courseEnd, setCourseEnd] = useState(editing?.courseEnd ?? '');
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
   // التعليمات
   const [instructions, setInstructions] = useState(editing?.instructions ?? '');
 
@@ -64,29 +73,39 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
     Alert.alert('Scan barcode', 'Connect to camera flow here.');
   };
 
+  const addTime = () => {
+    const trimmed = newTime.trim();
+    if (!trimmed) return;
+
+    const isValid = /^([01]\d|2[0-3]):[0-5]\d$/.test(trimmed);
+    if (!isValid) {
+      Alert.alert('Invalid time', 'Please enter time in HH:MM format, e.g. 09:00');
+      return;
+    }
+
+    setTimes(prev => (prev.includes(trimmed as HHmm) ? prev : [...prev, trimmed as HHmm]));
+    setNewTime('');
+  };
+
+  const removeTime = (t: string) => {
+    setTimes(prev => prev.filter(x => x !== t));
+  };
+
   const onSave = (formName: string) => {
     const trimmedName = formName.trim();
     const trimmedDoseText = doseText.trim();
     const trimmedCourseStart = courseStart.trim();
     const trimmedCourseEnd = courseEnd.trim();
-
-    const hasAmount = doseAmount.trim().length > 0;
-    const amountNum = hasAmount ? Number(doseAmount) : null;
-    const dosageMg = doseUnit === 'mg' && amountNum !== null ? amountNum : null;
+    const trimmedAmount = doseAmount.trim();
 
     let doseTextFinal: string | null = null;
     if (trimmedDoseText.length > 0) {
       doseTextFinal = trimmedDoseText;
-    } else if (doseUnit !== 'mg' && amountNum !== null) {
-      doseTextFinal = `${amountNum} ${doseUnit}`;
+    } else if (trimmedAmount.length > 0) {
+      doseTextFinal = `${trimmedAmount} ${doseUnit}`;
     }
 
-    const timesArray = timesCsv
-      ? (timesCsv
-          .split(',')
-          .map(t => t.trim())
-          .filter(t => t.length > 0) as HHmm[])
-      : ([] as HHmm[]);
+    const timesArray = times;
     const hasTimes = timesArray.length > 0;
 
     const normalizedInstructions: MedicineInstruction | null =
@@ -97,7 +116,6 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
     const payload: Medicine = {
       id: editing?.id ?? `m_${Date.now()}`,
       name: trimmedName,
-      ...(dosageMg !== null ? { dosageMg } : {}),
       ...(doseTextFinal !== null ? { doseText: doseTextFinal } : {}),
       ...(hasTimes ? { times: timesArray } : {}),
       ...(trimmedCourseStart.length > 0 ? { courseStart: trimmedCourseStart } : {}),
@@ -141,18 +159,30 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
             </Field>
 
             {/* الجرعة: كمية + وحدة */}
+                        {/* الجرعة: كمية + وحدة */}
             <Field label="Dosage">
               <View className="flex-row items-center">
                 <TextInput
                   value={doseAmount}
                   onChangeText={setDoseAmount}
-                  className="flex-1 mr-2 h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
+                  className="flex-1 mr-2 h-12 border border-gray-200 rounded-[10px] bg-white text-gray-900 text-[16px]"
+                  style={{ paddingHorizontal: 16 }}
                   placeholder="500"
                   keyboardType="numeric"
                 />
-                <UnitPicker value={doseUnit} onChange={setDoseUnit} />
+                <View className="w-[110px] h-12 border border-gray-200 rounded-[10px] bg-white justify-center">
+                 <Picker
+                  selectedValue={doseUnit}
+                  onValueChange={(value) => setDoseUnit(value as Unit)}
+                >
+                  {UNITS.map(u => (
+                    <Picker.Item key={u} label={u} value={u} />
+                  ))}
+                </Picker>
+
+                </View>
               </View>
-              <MyText className="text-[11px] text-gray-400 mt-1.5 mb-1.5">Optional: free text</MyText>
+              <MyText className="text-[11px] text-gray-400 mt-1.5 mb-1.5">Optional: notes about the dose</MyText>
               <TextInput
                 value={doseText}
                 onChangeText={setDoseText}
@@ -161,16 +191,63 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
               />
             </Field>
 
+
             {/* الأوقات */}
             <Field label="Times per day">
-              <TextInput
-                value={timesCsv}
-                onChangeText={setTimesCsv}
-                className="h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
-                placeholder="09:00, 13:00, 21:00"
-                autoCapitalize="none"
-              />
+              <View className="flex-row items-center">
+                <TouchableOpacity
+                  onPress={() => setShowTimePicker(true)}
+                  className="flex-1 mr-2 h-11 border border-gray-200 rounded-[10px] px-3 bg-white justify-center"
+                  accessibilityRole="button"
+                >
+                  <MyText className="text-gray-900">
+                    {newTime || 'Select time'}
+                  </MyText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={addTime}
+                  className="h-11 px-3 rounded-[10px] bg-sky-500 items-center justify-center flex-row"
+                  accessibilityRole="button"
+                >
+                  <MaterialCommunityIcons name="plus" size={18} color="#fff" />
+                  <MyText className="text-white font-bold ml-1">Add</MyText>
+                </TouchableOpacity>
+              </View>
+
+              {showTimePicker && (
+                <DateTimePicker
+                  value={timePickerValue}
+                  mode="time"
+                  display="spinner"
+                  onChange={(_event, selectedDate) => {
+                    if (!selectedDate) {
+                      setShowTimePicker(false);
+                      return;
+                    }
+                    setShowTimePicker(false);
+                    setTimePickerValue(selectedDate);
+                    const hours = selectedDate.getHours().toString().padStart(2, '0');
+                    const minutes = selectedDate.getMinutes().toString().padStart(2, '0');
+                    setNewTime(`${hours}:${minutes}`);
+                  }}
+                />
+              )}
+
+              <View className="flex-row flex-wrap gap-2 mt-2">
+                {times.map(t => (
+                  <View
+                    key={t}
+                    className="flex-row items-center bg-gray-100 rounded-full px-3 py-1"
+                  >
+                    <MyText className="text-[12px] text-gray-800 mr-1">{t}</MyText>
+                    <TouchableOpacity onPress={() => removeTime(t)}>
+                      <MaterialCommunityIcons name="close" size={14} color="#6b7280" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
             </Field>
+
 
             {/* الأيام */}
             <Field label="Days">
@@ -200,21 +277,55 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
             {/* المدة */}
             <Field label="Treatment duration">
               <View className="flex-row items-center">
-                <TextInput
-                  value={courseStart}
-                  onChangeText={setCourseStart}
-                  className="flex-1 mr-2 h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
-                  placeholder="Start YYYY-MM-DD"
-                  autoCapitalize="none"
-                />
-                <TextInput
-                  value={courseEnd}
-                  onChangeText={setCourseEnd}
-                  className="flex-1 h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
-                  placeholder="End YYYY-MM-DD"
-                  autoCapitalize="none"
-                />
+                <TouchableOpacity
+                  onPress={() => setShowStartPicker(true)}
+                  className="flex-1 mr-2 h-11 border border-gray-200 rounded-[10px] px-3 bg-white justify-center"
+                  accessibilityRole="button"
+                >
+                  <MyText className="text-gray-900">
+                    {courseStart || 'Start YYYY-MM-DD'}
+                  </MyText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowEndPicker(true)}
+                  className="flex-1 h-11 border border-gray-200 rounded-[10px] px-3 bg-white justify-center"
+                  accessibilityRole="button"
+                >
+                  <MyText className="text-gray-900">
+                    {courseEnd || 'End YYYY-MM-DD'}
+                  </MyText>
+                </TouchableOpacity>
               </View>
+
+              {showStartPicker && (
+                <DateTimePicker
+                  value={courseStart ? new Date(courseStart) : new Date()}
+                  mode="date"
+                  display="default"
+                  onChange={(_event, selectedDate) => {
+                    setShowStartPicker(false);
+                    if (selectedDate) {
+                      const iso = selectedDate.toISOString().slice(0, 10);
+                      setCourseStart(iso);
+                    }
+                  }}
+                />
+              )}
+
+              {showEndPicker && (
+                <DateTimePicker
+                  value={courseEnd ? new Date(courseEnd) : new Date()}
+                  mode="date"
+                  display="default"
+                  onChange={(_event, selectedDate) => {
+                    setShowEndPicker(false);
+                    if (selectedDate) {
+                      const iso = selectedDate.toISOString().slice(0, 10);
+                      setCourseEnd(iso);
+                    }
+                  }}
+                />
+              )}
             </Field>
 
             {/* التعليمات */}

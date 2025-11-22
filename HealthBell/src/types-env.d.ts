@@ -1,23 +1,10 @@
 // src/types-env.d.ts
 type HHmm = `${number}${number}:${number}${number}`;
 
-
-type MedicineForm =
-  | "tablet"
-  | "capsule"
-  | "syrup"
-  | "injection"
-  | "drops"
-  | "ointment"
-  | "spray"
-  | "other";
-
-
 type MedicineInstruction =
   | "after_food"
   | "before_food"
   | "with_water"
-  | "with_milk"
   | "with_food"
   | "none";
 
@@ -25,7 +12,6 @@ type MedicineInstruction =
 interface Medicine {
   id: string;
   name: string;
-  dosageMg?: number;
   form?: MedicineForm;
 
   doseText?: string;

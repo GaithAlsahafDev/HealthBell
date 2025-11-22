@@ -5,15 +5,15 @@ import MyText from './MyText';
 
 type Props = {
   name: string;
-  dosageMg?: number;
+  doseText?: string;
   frequency?: string;
   hint?: string;
   onPress?: () => void;
 };
 
-export default function MedicineCard({ name, dosageMg, frequency, hint, onPress }: Props) {
+export default function MedicineCard({ name, doseText, frequency, hint, onPress }: Props) {
   const subtitle =
-    `${dosageMg ? `${dosageMg}mg` : '—'} · ${frequency ?? '—'}${hint ? ` · ${hint}` : ''}`;
+    `${doseText ?? '—'} · ${frequency ?? '—'}${hint ? ` · ${hint}` : ''}`;
 
   return (
     <TouchableOpacity

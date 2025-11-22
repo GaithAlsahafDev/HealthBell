@@ -28,7 +28,6 @@ const MedicineDetailScreen = () => {
   }
 
   const dosageLine = [
-    med.dosageMg ? `${med.dosageMg} mg` : null,
     med.doseText ?? null,
     med.form ?? null,
   ].filter(Boolean).join(' • ');

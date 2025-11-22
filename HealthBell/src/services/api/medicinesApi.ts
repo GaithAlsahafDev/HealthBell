@@ -1,24 +1,46 @@
 // src/services/api/medicinesApi.ts
-import { api } from "./axios";
+import { collection, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
+import { db } from "../../config/firebase";
+
+const MEDICINES_COLLECTION = "medicines";
 
 export const medicinesApi = {
   async getAll(): Promise<Medicine[]> {
-    const res = await api.get<Medicine[] | { medicines: Medicine[] }>("/medicines");
-    return Array.isArray(res.data) ? res.data : res.data.medicines;
+    const colRef = collection(db, MEDICINES_COLLECTION);
+    const snapshot = await getDocs(colRef);
+
+    const items: Medicine[] = snapshot.docs.map(d => {
+      const data = d.data() as Medicine;
+      // ضمان وجود id: نستخدم حقل id إن وُجد، وإلا document id
+      return {
+        ...data,
+        id: data.id ?? d.id,
+      };
+    });
+
+    return items;
   },
 
   async create(m: Medicine): Promise<Medicine> {
-    const res = await api.post<Medicine>("/medicines", m);
-    return res.data;
+    const id = m.id ?? `m_${Date.now()}`;
+    const docRef = doc(db, MEDICINES_COLLECTION, id);
+    const payload: Medicine = { ...m, id };
+    await setDoc(docRef, payload);
+    return payload;
   },
 
   async update(m: Medicine): Promise<Medicine> {
-    const res = await api.put<Medicine>(`/medicines/${m.id}`, m);
-    return res.data;
+    if (!m.id) {
+      throw new Error("Cannot update medicine without id");
+    }
+    const docRef = doc(db, MEDICINES_COLLECTION, m.id);
+    await setDoc(docRef, m, { merge: true });
+    return m;
   },
 
   async remove(id: string): Promise<{ success: boolean }> {
-    const res = await api.delete<{ success: boolean }>(`/medicines/${id}`);
-    return res.data;
+    const docRef = doc(db, MEDICINES_COLLECTION, id);
+    await deleteDoc(docRef);
+    return { success: true };
   },
 };

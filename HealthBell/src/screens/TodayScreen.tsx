@@ -4,17 +4,26 @@ import { View, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../components/Button';
 import MyText from '../components/MyText';
+import { useAppSelector } from '../hooks/reduxHooks';
 
-// JSON محلي لبيانات اليوم
-const todayData: {
-  date: string;
-  doses: { id: string; medicineName: string; time: string; status: 'upcoming' | 'taken' | 'missed' }[];
-} = require('../data/today.json');
+type Dose = {
+  id: string;
+  medicineName: string;
+  time: string;
+  status: 'upcoming' | 'taken' | 'missed';
+};
 
 export default function TodayScreen() {
-  const [doses, setDoses] = useState(todayData.doses);
-  const [sorted, setSorted] = useState(doses);
-  const [now, setNow] = useState(new Date()); // ← إضافة: حالة الوقت الحالي
+  const medicines = useAppSelector(s => s.medicines) as Medicine[];
+
+  const [doses, setDoses] = useState<Dose[]>([]);
+  const [sorted, setSorted] = useState<Dose[]>([]);
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const initial = buildDosesFromMedicines(medicines);
+    setDoses(initial);
+  }, [medicines]);
 
   useEffect(() => {
     setSorted([...doses].sort((a, b) => a.time.localeCompare(b.time)));
@@ -41,7 +50,7 @@ export default function TodayScreen() {
     setDoses(prev => prev.map(d => (d.id === id ? { ...d, status } : d)));
   };
 
-  const renderItem = ({ item }: { item: typeof doses[number] }) => {
+  const renderItem = ({ item }: { item: Dose }) => {
     const isTaken = item.status === 'taken';
     const isMissed = item.status === 'missed';
 
@@ -105,7 +114,7 @@ export default function TodayScreen() {
           <View className="py-1">
             <View className="self-start rounded-full bg-gray-100 px-3 py-1.5">
               <MyText className="text-[12px] font-medium text-gray-700 tracking-wide">
-                {formatDate(todayData.date)} • {formatTime(now)}
+                {formatDate(new Date().toISOString())} • {formatTime(now)}
               </MyText>
             </View>
           </View>
@@ -144,4 +153,42 @@ function formatTime(d: Date) {
     hour: '2-digit',
     minute: '2-digit',
   }).format(d);
+}
+
+function buildDosesFromMedicines(medicines: Medicine[]): Dose[] {
+  const today = new Date();
+  const weekdayLabel = new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(today); // Mon, Tue, ...
+  const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
+
+  return medicines.flatMap(med => {
+    const everyDay = (med as any).everyDay ?? true;
+    const days: string[] | undefined = (med as any).days;
+    const courseStart: string | undefined = (med as any).courseStart;
+    const courseEnd: string | undefined = (med as any).courseEnd;
+
+    const inDateRange =
+      (!courseStart || courseStart <= todayStr) &&
+      (!courseEnd || todayStr <= courseEnd);
+
+    if (!inDateRange) return [];
+
+    const activeToday =
+      everyDay ||
+      (Array.isArray(days) && days.includes(weekdayLabel));
+
+    if (!activeToday) return [];
+
+    const times: string[] = (med as any).times ?? [];
+
+    if (!times.length) {
+      return [];
+    }
+
+    return times.map(time => ({
+      id: `${med.id}_${time}`,
+      medicineName: med.name,
+      time,
+      status: 'upcoming' as const,
+    }));
+  });
 }

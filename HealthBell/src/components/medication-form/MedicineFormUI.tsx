@@ -7,6 +7,7 @@ import MyText from '../MyText';
 
 export const UNITS = ['mg', 'ml', 'g', 'mcg', 'drops', 'tablet', 'capsule'] as const;
 export type Unit = (typeof UNITS)[number];
+;
 
 /* ---------- عناصر مساعدة ---------- */
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -14,23 +15,6 @@ export function Field({ label, children }: { label: string; children: React.Reac
     <View className="mb-[14px]">
       <MyText className="text-[12px] text-gray-500 mb-1.5">{label}</MyText>
       {children}
-    </View>
-  );
-}
-
-export function UnitPicker({ value, onChange }: { value: Unit; onChange: (u: Unit) => void }) {
-  return (
-    <View className="flex-row flex-wrap gap-1.5">
-      {UNITS.map(u => (
-        <TouchableOpacity
-          key={u}
-          onPress={() => onChange(u)}
-          className={`h-9 px-2.5 rounded-lg border items-center justify-center mb-1.5 ${value === u ? 'bg-sky-500 border-sky-500' : 'bg-white border-gray-300'}`}
-          accessibilityRole="button"
-        >
-          <MyText className={`font-semibold ${value === u ? 'text-white' : 'text-gray-700'}`}>{u}</MyText>
-        </TouchableOpacity>
-      ))}
     </View>
   );
 }

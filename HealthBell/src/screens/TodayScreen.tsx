@@ -46,6 +46,30 @@ export default function TodayScreen() {
     };
   }, [now]);
 
+  // جعل الجرعات التي مضى وقتها تتحول تلقائياً إلى "missed"
+  useEffect(() => {
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    let changed = false;
+
+    const updated = doses.map(d => {
+      if (d.status !== 'upcoming') return d;
+
+      const [hh, mm] = d.time.split(':').map(Number);
+      const doseMinutes = hh * 60 + mm;
+
+      if (doseMinutes < nowMinutes) {
+        changed = true;
+        return { ...d, status: 'missed' as const };
+      }
+
+      return d;
+    });
+
+    if (changed) {
+      setDoses(updated);
+    }
+  }, [now, doses]);
+
   const setStatus = (id: string, status: 'taken' | 'missed') => {
     setDoses(prev => prev.map(d => (d.id === id ? { ...d, status } : d)));
   };

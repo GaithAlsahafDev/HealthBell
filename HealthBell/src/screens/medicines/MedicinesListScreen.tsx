@@ -11,17 +11,21 @@ import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import MyText from '../../components/MyText';
 import { medicinesApi } from '../../services/medicinesApi';
 import { add, clearAll } from '../../store/store-slices/MedicinesSlice';
+import { selectAuthUid } from '../../store/store-slices/AuthSlice';
 
 export default function MedicinesListScreen() {
   const navigation = useNavigation<MedicinesStackNavProps<'MedicinesList'>['navigation']>();
   const dispatch = useAppDispatch();
 
   const cached = useAppSelector(s => s.medicines) as Medicine[];
+  const uid = useAppSelector(selectAuthUid);
 
   useEffect(() => {
     const load = async () => {
+      if (!uid) return;
+
       try {
-        const data = await medicinesApi.getAll();
+        const data = await medicinesApi.getAll(uid);
         dispatch(clearAll());
         data.forEach(item => dispatch(add(item)));
       } catch (error) {
@@ -31,7 +35,7 @@ export default function MedicinesListScreen() {
 
     const unsubscribe = navigation.addListener('focus', load);
     return unsubscribe;
-  }, [navigation, dispatch]);
+  }, [navigation, dispatch, uid]);
 
   const list: Medicine[] = cached;
 

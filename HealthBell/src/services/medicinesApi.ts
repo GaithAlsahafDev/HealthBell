@@ -2,11 +2,12 @@
 import { collection, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 
-const MEDICINES_COLLECTION = "medicines";
+const getMedicinesCollection = (uid: string) =>
+  collection(db, "users", uid, "medicines");
 
 export const medicinesApi = {
-  async getAll(): Promise<Medicine[]> {
-    const colRef = collection(db, MEDICINES_COLLECTION);
+  async getAll(uid: string): Promise<Medicine[]> {
+    const colRef = getMedicinesCollection(uid);
     const snapshot = await getDocs(colRef);
 
     const items: Medicine[] = snapshot.docs.map(d => {
@@ -21,25 +22,25 @@ export const medicinesApi = {
     return items;
   },
 
-  async create(m: Medicine): Promise<Medicine> {
+  async create(uid: string, m: Medicine): Promise<Medicine> {
     const id = m.id ?? `m_${Date.now()}`;
-    const docRef = doc(db, MEDICINES_COLLECTION, id);
+    const docRef = doc(db, "users", uid, "medicines", id);
     const payload: Medicine = { ...m, id };
     await setDoc(docRef, payload);
     return payload;
   },
 
-  async update(m: Medicine): Promise<Medicine> {
+  async update(uid: string, m: Medicine): Promise<Medicine> {
     if (!m.id) {
       throw new Error("Cannot update medicine without id");
     }
-    const docRef = doc(db, MEDICINES_COLLECTION, m.id);
+    const docRef = doc(db, "users", uid, "medicines", m.id);
     await setDoc(docRef, m, { merge: true });
     return m;
   },
 
-  async remove(id: string): Promise<{ success: boolean }> {
-    const docRef = doc(db, MEDICINES_COLLECTION, id);
+  async remove(uid: string, id: string): Promise<{ success: boolean }> {
+    const docRef = doc(db, "users", uid, "medicines", id);
     await deleteDoc(docRef);
     return { success: true };
   },

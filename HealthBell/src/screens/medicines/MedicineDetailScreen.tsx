@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { remove } from '../../store/store-slices/MedicinesSlice';
 import NetInfo from "@react-native-community/netinfo";
 import { medicinesApi } from '../../services/medicinesApi';
+import { selectAuthUid } from '../../store/store-slices/AuthSlice';
 
 const MedicineDetailScreen = () => {
   const navigation = useNavigation<MedicinesStackNavProps<'MedicineDetail'>['navigation']>();
@@ -18,6 +19,7 @@ const MedicineDetailScreen = () => {
 
   const dispatch = useAppDispatch();
   const medicines = useAppSelector(s => s.medicines) as Medicine[];
+  const uid = useAppSelector(selectAuthUid);
 
   const med = useMemo(() => medicines.find(m => m.id === data?.id), [data?.id, medicines]);
 
@@ -51,8 +53,13 @@ const MedicineDetailScreen = () => {
       return;
     }
 
+    if (!uid) {
+      Alert.alert("Error", "No user ID found. Please log in again.");
+      return;
+    }
+
     try {
-      await medicinesApi.remove(med.id);
+      await medicinesApi.remove(uid, med.id);
       dispatch(remove(med.id));
       console.log('Delete', med.id);
       navigation.goBack();

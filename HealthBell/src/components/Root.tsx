@@ -26,7 +26,7 @@ export default function Root() {
       setAuthChecked(true);
 
       if (firebaseUser) {
-        (store.dispatch as any)(loadMedicines());
+        (store.dispatch as any)(loadMedicines(firebaseUser.uid));
       }
     });
     return unsubscribe;

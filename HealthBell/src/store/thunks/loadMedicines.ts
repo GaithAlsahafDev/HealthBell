@@ -3,10 +3,10 @@ import { AppDispatch } from "../store";
 import { medicinesApi } from "../../services/medicinesApi";
 import { clearAll, add } from "../store-slices/MedicinesSlice";
 
-export const loadMedicines = () => {
+export const loadMedicines = (uid: string) => {
   return async (dispatch: AppDispatch) => {
     try {
-      const data = await medicinesApi.getAll();
+      const data = await medicinesApi.getAll(uid);
 
       dispatch(clearAll());
       data.forEach(item => dispatch(add(item)));

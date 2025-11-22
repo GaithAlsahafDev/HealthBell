@@ -7,13 +7,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { persistor,store } from "../store/store";
 import { PersistGate } from "redux-persist/integration/react";
-import { bootstrap } from "../store/thunks/bootstrap";
-import { triggerOutboxSync } from "../store/middleware/syncMiddleware";
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { View, ActivityIndicator } from 'react-native';
 import AuthStack from '../navigation/AuthStack';
+import { loadMedicines } from "../store/thunks/loadMedicines";
 
 const queryClient = new QueryClient();
 
@@ -25,13 +24,12 @@ export default function Root() {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setAuthChecked(true);
+
+      if (firebaseUser) {
+        (store.dispatch as any)(loadMedicines());
+      }
     });
     return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    (store.dispatch as any)(bootstrap());
-    store.dispatch(triggerOutboxSync());
   }, []);
 
   if (!authChecked) {

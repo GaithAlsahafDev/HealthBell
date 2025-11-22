@@ -1,8 +1,0 @@
-{
-  "date": "2025-11-04",
-  "doses": [
-    { "id": "d1", "medicineName": "Aspirin", "time": "09:00", "status": "upcoming" },
-    { "id": "d2", "medicineName": "Metformin", "time": "13:00", "status": "upcoming" },
-    { "id": "d3", "medicineName": "Vitamin D", "time": "20:30", "status": "upcoming" }
-  ]
-}

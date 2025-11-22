@@ -1,20 +1,37 @@
 // src/screens/medicines/MedicinesListScreen.tsx
-import React from 'react';
-import { View, FlatList } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, FlatList, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { MedicinesStackNavProps } from '../../navigation/types';
 import MedicineCard from '../../components/MedicineCard';
 import Button from '../../components/Button';
-import { useAppSelector } from '../../hooks/reduxHooks';
+import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import MyText from '../../components/MyText';
-
+import { medicinesApi } from '../../services/medicinesApi';
+import { add, clearAll } from '../../store/store-slices/MedicinesSlice';
 
 export default function MedicinesListScreen() {
   const navigation = useNavigation<MedicinesStackNavProps<'MedicinesList'>['navigation']>();
+  const dispatch = useAppDispatch();
 
   const cached = useAppSelector(s => s.medicines) as Medicine[];
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await medicinesApi.getAll();
+        dispatch(clearAll());
+        data.forEach(item => dispatch(add(item)));
+      } catch (error) {
+        Alert.alert('Error', 'Failed to load medicines. Please check your connection.');
+      }
+    };
+
+    const unsubscribe = navigation.addListener('focus', load);
+    return unsubscribe;
+  }, [navigation, dispatch]);
 
   const list: Medicine[] = cached;
 

@@ -6,6 +6,8 @@ import type { MedicinesStackNavProps } from '../../navigation/types';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { add, update } from '../../store/store-slices/MedicinesSlice';
 import MedicineForm from '../../components/medication-form/MedicineForm';
+import NetInfo from "@react-native-community/netinfo";
+import { medicinesApi } from '../../services/medicinesApi';
 
 export default function AddEditMedicineScreen() {
   const navigation = useNavigation<MedicinesStackNavProps<'AddEditMedicine'>['navigation']>();
@@ -17,16 +19,30 @@ export default function AddEditMedicineScreen() {
 
   const editing = useMemo(() => medicines.find(m => m.id === editId), [editId, medicines]);
 
-  const handleSubmit = (payload: Medicine) => {
-    if (editId) {
-      dispatch(update(payload));
-    } else {
-      dispatch(add(payload));
+  const handleSubmit = async (payload: Medicine) => {
+
+    const state = await NetInfo.fetch();
+    if (!state.isConnected) {
+      Alert.alert("No Internet", "Cannot modify medicines while offline.");
+      return;
     }
 
-    console.log(editId ? 'UPDATE MEDICINE' : 'CREATE MEDICINE', payload);
-    Alert.alert(editId ? 'Medicine updated' : 'Medicine added');
-    navigation.goBack();
+    try {
+      if (editId) {
+        await medicinesApi.update(payload);
+        dispatch(update(payload));
+      } else {
+        await medicinesApi.create(payload);
+        dispatch(add(payload));
+      }
+
+      console.log(editId ? 'UPDATE MEDICINE' : 'CREATE MEDICINE', payload);
+      Alert.alert(editId ? 'Medicine updated' : 'Medicine added');
+      navigation.goBack();
+
+    } catch (error) {
+      Alert.alert("Error", "Failed to save medicine. Please try again.");
+    }
   };
 
   return (

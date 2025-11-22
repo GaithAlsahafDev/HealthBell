@@ -1,13 +1,19 @@
 // src/store/store.ts 
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import {FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE,} from "redux-persist";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import medicinesReducer from "./store-slices/MedicinesSlice";
-import metaReducer from "./store-slices/MetaSlice";
-import outboxReducer from "./store-slices/OutboxSlice";
 import authReducer from "./store-slices/AuthSlice";
-import { syncMiddleware } from "./middleware/syncMiddleware";
 
 const persistConfig = {
   key: "healthbell-state",
@@ -17,10 +23,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   medicines: medicinesReducer,
-  meta: metaReducer,
-  outbox: outboxReducer,
   auth: authReducer,
-  
 });
 
 // تعريف Rootstate اعتمادًا على rootReducer وليس على store
@@ -35,9 +38,8 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(syncMiddleware),
+    }),
 });
-
 
 export const persistor = persistStore(store);
 

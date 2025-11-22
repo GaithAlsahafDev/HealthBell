@@ -1,6 +1,6 @@
 // src/screens/medicines/MedicineDetailScreen.tsx
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { MedicinesStackNavProps } from '../../navigation/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,6 +8,8 @@ import Button from '../../components/Button';
 import MyText from '../../components/MyText';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { remove } from '../../store/store-slices/MedicinesSlice';
+import NetInfo from "@react-native-community/netinfo";
+import { medicinesApi } from '../../services/medicinesApi';
 
 const MedicineDetailScreen = () => {
   const navigation = useNavigation<MedicinesStackNavProps<'MedicineDetail'>['navigation']>();
@@ -42,7 +44,22 @@ const MedicineDetailScreen = () => {
     : med.courseStart ? `Since ${med.courseStart}` : '—';
 
   const onEdit = () => navigation.navigate('AddEditMedicine', { editId: med.id });
-  const onDelete = () => { dispatch(remove(med.id)); console.log('Delete', med.id); navigation.goBack(); };
+  const onDelete = async () => {
+    const state = await NetInfo.fetch();
+    if (!state.isConnected) {
+      Alert.alert("No Internet", "Cannot delete medicines while offline.");
+      return;
+    }
+
+    try {
+      await medicinesApi.remove(med.id);
+      dispatch(remove(med.id));
+      console.log('Delete', med.id);
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert("Error", "Failed to delete medicine. Please try again.");
+    }
+  };
 
   return (
     <View className="flex-1 bg-white p-4">

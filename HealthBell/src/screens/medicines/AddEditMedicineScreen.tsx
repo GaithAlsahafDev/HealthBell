@@ -5,7 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { MedicinesStackNavProps } from '../../navigation/types';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { add, update } from '../../store/store-slices/MedicinesSlice';
-import MedicineForm from '../../components/medication-form/MedicineForm';
+import MedicineForm from '../../components/medicines/MedicineForm';
 import NetInfo from "@react-native-community/netinfo";
 import { medicinesApi } from '../../services/medicinesApi';
 import { selectAuthUid } from '../../store/store-slices/AuthSlice';

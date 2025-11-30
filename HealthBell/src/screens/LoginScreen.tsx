@@ -28,7 +28,16 @@ export default function LoginScreen({ navigation }: AuthStackNavProps<'Login'>) 
       const cred = await signInWithEmailAndPassword(auth, email, password);
       dispatch(setUser({ uid: cred.user.uid, email: cred.user.email }));
     } catch (error: any) {
-      Alert.alert('Login Error', error.message);
+      if (error?.code === 'auth/user-not-found') {
+        Alert.alert('Login Error', error.message, [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Register'),
+          },
+        ]);
+      } else {
+        Alert.alert('Login Error', error.message);
+      }
     }
   };
 

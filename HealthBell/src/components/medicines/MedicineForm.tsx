@@ -1,0 +1,217 @@
+// src/components/medicines/MedicineForm.tsx
+import React, { useRef } from 'react';
+import {View, TextInput, ScrollView, TouchableOpacity, Alert} from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MyText from '../MyText';
+import MyTextInput from '../MyTextInput';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { Field, type Unit } from './MedicineFormUI';
+
+import MedicineDosageSection from './MedicineDosageSection';
+import MedicineTimesSection from './MedicineTimesSection';
+import MedicineDaysSection from './MedicineDaysSection';
+import MedicineDurationSection from './MedicineDurationSection';
+import MedicineInstructionsSection from './MedicineInstructionsSection';
+
+const schema = Yup.object({
+  name: Yup.string().trim().required('Medicine name is required'),
+
+  doseAmount: Yup.number()
+    .typeError("Dosage must be a number")
+    .positive("Dosage must be positive")
+    .required("Dosage is required"),
+
+  times: Yup.array()
+    .min(1, "At least one time is required"),
+
+  courseEnd: Yup.string().test(
+    "end-after-start",
+    "End date must be after start date",
+    function (value) {
+      const { courseStart } = this.parent;
+      if (!courseStart || !value) return true;
+      return new Date(value) >= new Date(courseStart);
+    }
+  ),
+});
+
+type MedicineFormProps = {
+  editing?: Medicine;
+  editId?: string;
+  onSubmit: (payload: Medicine) => void;
+  onCancel: () => void;
+};
+
+export type MedicineFormValues = {
+  name: string;
+  doseAmount: string;
+  doseUnit: Unit;
+  doseText: string;
+  times: HHmm[];
+  newTime: string;
+  everyDay: boolean;
+  days: string[];
+  courseStart: string;
+  courseEnd: string;
+  instructions: string;
+};
+
+function buildMedicinePayload(vals: MedicineFormValues, editing?: Medicine): Medicine {
+  const trimmedName = vals.name.trim();
+  const trimmedDoseText = vals.doseText.trim();
+  const trimmedCourseStart = vals.courseStart.trim();
+  const trimmedCourseEnd = vals.courseEnd.trim();
+  const trimmedAmount = vals.doseAmount.trim();
+
+  let doseTextFinal: string | null = null;
+  if (trimmedDoseText.length > 0) {
+    doseTextFinal = trimmedDoseText;
+  } else if (trimmedAmount.length > 0) {
+    doseTextFinal = `${trimmedAmount} ${vals.doseUnit}`;
+  }
+
+  const hasTimes = vals.times.length > 0;
+
+  const normalizedInstructions: MedicineInstruction | null =
+    vals.instructions && vals.instructions.length > 0
+      ? (vals.instructions as MedicineInstruction)
+      : "none";
+
+  const payload: Medicine = {
+    id: editing?.id ?? `m_${Date.now()}`,
+    name: trimmedName,
+    ...(doseTextFinal !== null ? { doseText: doseTextFinal } : {}),
+    ...(hasTimes ? { times: vals.times } : {}),
+    ...(trimmedCourseStart.length > 0 ? { courseStart: trimmedCourseStart } : {}),
+    ...(trimmedCourseEnd.length > 0 ? { courseEnd: trimmedCourseEnd } : {}),
+    ...(normalizedInstructions !== "none"
+      ? { instructions: normalizedInstructions }
+      : {}),
+
+    everyDay: vals.everyDay,
+    days: [...vals.days],
+  };
+
+  return payload;
+}
+
+export default function MedicineForm({ editing, editId, onSubmit, onCancel }: MedicineFormProps) {
+
+  const doseAmountRef = useRef<TextInput | null>(null);
+  const doseTextRef = useRef<TextInput | null>(null);
+
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setFieldValue,
+    errors,
+    touched
+  } = useFormik<MedicineFormValues>({
+    initialValues: {
+      name: editing?.name ?? '',
+      doseAmount: '',
+      doseUnit: 'mg',
+      doseText: editing?.doseText ?? '',
+      times: editing?.times ?? ([] as HHmm[]),
+      newTime: '',
+      everyDay: true,
+      days: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      courseStart: editing?.courseStart ?? '',
+      courseEnd: editing?.courseEnd ?? '',
+      instructions: editing?.instructions ?? '',
+    },
+    validationSchema: schema,
+    enableReinitialize: true,
+    onSubmit: (vals) => {
+      const payload = buildMedicinePayload(vals, editing);
+      onSubmit(payload);
+    },
+  });
+
+  return (
+    <ScrollView keyboardShouldPersistTaps="handled" className="p-4 bg-white">
+      <>
+        <MyText className="text-[20px] font-bold mb-3 text-gray-900">{editId ? 'Edit medicine' : 'Add medicine'}</MyText>
+
+        {/* اسم الدواء - إجباري */}
+        <Field label="Medicine name *">
+          <MyTextInput
+            value={values.name}
+            onChangeText={handleChange('name')}
+            onBlur={handleBlur('name')}
+            className="h-11 border border-gray-200 rounded-[10px] px-3 bg-white text-gray-900"
+            placeholder="Aspirin"
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              doseAmountRef.current?.focus();
+            }}
+          />
+          {touched.name && errors.name ? (
+            <MyText className="text-red-500 text-xs mt-1">{errors.name}</MyText>
+          ) : null}
+        </Field>
+
+        {/* الجرعة */}
+        <MedicineDosageSection
+          values={values}
+          setFieldValue={setFieldValue}
+          errors={errors}
+          touched={touched}
+          doseAmountRef={doseAmountRef}
+          doseTextRef={doseTextRef}
+        />
+
+        {/* الأوقات */}
+        <MedicineTimesSection
+          values={values}
+          setFieldValue={setFieldValue}
+          errors={errors}
+          touched={touched}
+        />
+
+        {/* الأيام */}
+        <MedicineDaysSection values={values} setFieldValue={setFieldValue} />
+
+        {/* المدة */}
+        <MedicineDurationSection
+          values={values}
+          setFieldValue={setFieldValue}
+          errors={errors}
+          touched={touched}
+        />
+
+        {/* التعليمات */}
+        <MedicineInstructionsSection values={values} setFieldValue={setFieldValue} />
+
+        {/* أزرار الإجراء */}
+        <View className="flex-row gap-3 mt-2 mb-3">
+          <TouchableOpacity className="flex-1 h-12 rounded-[10px] items-center justify-center flex-row gap-2 bg-sky-500" onPress={() => handleSubmit()} accessibilityRole="button">
+            <MaterialCommunityIcons name="content-save" size={18} color="#fff" />
+            <MyText className="text-white font-bold">{editId ? 'Save changes' : 'Add medicine'}</MyText>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="flex-1 h-12 rounded-[10px] items-center justify-center flex-row gap-2 bg-gray-100" onPress={onCancel} accessibilityRole="button">
+            <MyText className="text-gray-900 font-bold">Cancel</MyText>
+          </TouchableOpacity>
+        </View>
+
+        {/* زر اختياري: مسح باركود */}
+        <TouchableOpacity
+          className="flex-row gap-2 h-12 rounded-[10px] items-center justify-center bg-white border border-sky-500"
+          onPress={() => {
+            Alert.alert('Scan barcode', 'Connect to camera flow here.');
+          }}
+          accessibilityRole="button"
+        >
+          <MaterialCommunityIcons name="barcode-scan" size={18} color="#0EA5E9" />
+          <MyText className="text-sky-500 font-bold">Scan barcode</MyText>
+        </TouchableOpacity>
+
+        <View className="h-6" />
+      </>
+    </ScrollView>
+  );
+}

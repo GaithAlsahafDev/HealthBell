@@ -10,11 +10,22 @@ export type Unit = (typeof UNITS)[number];
 ;
 
 /* ---------- عناصر مساعدة ---------- */
-export function Field({ label, children }: { label: string; children: React.ReactNode }) {
+export function Field({
+  label,
+  children,
+  error
+}: {
+  label: string;
+  children: React.ReactNode;
+  error?: string;
+}) {
   return (
     <View className="mb-[14px]">
       <MyText className="text-[12px] text-gray-500 mb-1.5">{label}</MyText>
       {children}
+      {error ? (
+        <MyText className="text-red-500 text-xs mt-1">{error}</MyText>
+      ) : null}
     </View>
   );
 }
@@ -57,7 +68,11 @@ export function InstructionsPicker({
           </TouchableOpacity>
         );
       })}
-      <TouchableOpacity onPress={() => onChange('')} className="h-[34px] px-3 rounded-full border bg-white border-gray-300 items-center justify-center" accessibilityRole="button">
+      <TouchableOpacity
+        onPress={() => onChange('')}
+        className="h-[34px] px-3 rounded-full border bg-white border-gray-300 items-center justify-center"
+        accessibilityRole="button"
+      >
         <MyText className="text-[12px] font-semibold text-gray-700">None</MyText>
       </TouchableOpacity>
     </View>

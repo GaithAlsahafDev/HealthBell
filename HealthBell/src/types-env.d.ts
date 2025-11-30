@@ -15,6 +15,8 @@ interface Medicine {
   form?: MedicineForm;
 
   doseText?: string;
+  doseAmount?: string;
+  doseUnit?: string;
 
   times?: HHmm[];
   instructions?: MedicineInstruction;

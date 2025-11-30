@@ -76,6 +76,7 @@ function buildMedicinePayload(vals: MedicineFormValues, editing?: Medicine): Med
   }
 
   const hasTimes = vals.times.length > 0;
+  const hasDoseAmount = trimmedAmount.length > 0;
 
   const normalizedInstructions: MedicineInstruction | null =
     vals.instructions && vals.instructions.length > 0
@@ -85,6 +86,7 @@ function buildMedicinePayload(vals: MedicineFormValues, editing?: Medicine): Med
   const payload: Medicine = {
     id: editing?.id ?? `m_${Date.now()}`,
     name: trimmedName,
+    ...(hasDoseAmount ? { doseAmount: trimmedAmount, doseUnit: vals.doseUnit } : {}),
     ...(doseTextFinal !== null ? { doseText: doseTextFinal } : {}),
     ...(hasTimes ? { times: vals.times } : {}),
     ...(trimmedCourseStart.length > 0 ? { courseStart: trimmedCourseStart } : {}),
@@ -193,7 +195,6 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
         {/* أزرار الإجراء */}
         <View className="flex-row gap-3 mt-2 mb-3">
           <TouchableOpacity className="flex-1 h-12 rounded-[10px] items-center justify-center flex-row gap-2 bg-sky-500" onPress={() => handleSubmit()} accessibilityRole="button">
-            <MaterialCommunityIcons name="content-save" size={18} color="#fff" />
             <MyText className="text-white font-bold">{editId ? 'Save changes' : 'Add medicine'}</MyText>
           </TouchableOpacity>
 

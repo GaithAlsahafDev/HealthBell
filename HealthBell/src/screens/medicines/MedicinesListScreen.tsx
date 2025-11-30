@@ -47,7 +47,7 @@ export default function MedicinesListScreen() {
   const renderItem = ({ item }: { item: Medicine }) => (
     <MedicineCard
       name={item.name}
-      doseText={item.doseText}
+      doseText={`${item.doseAmount ?? ''} ${item.doseUnit ?? ''}`.trim()}
       hint="Tap to view details"
       onPress={() => openDetail(item)}
     />

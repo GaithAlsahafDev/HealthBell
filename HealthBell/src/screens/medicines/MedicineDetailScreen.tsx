@@ -31,19 +31,37 @@ const MedicineDetailScreen = () => {
     );
   }
 
-  const dosageLine = [
-    med.doseText ?? null,
-    med.form ?? null,
-  ].filter(Boolean).join(' • ');
+  const dosageParts: string[] = [];
+  if (med.doseAmount && med.doseUnit) {
+    dosageParts.push(`${med.doseAmount} ${med.doseUnit}`);
+  }
+  if (med.doseText) {
+    dosageParts.push(med.doseText);
+  }
+  if (med.form) {
+    dosageParts.push(String(med.form));
+  }
+  const dosageLine = dosageParts.join(' • ') || '—';
+
   const timesLine = med.times?.length ? med.times.join(' – ') : '—';
   const instructionsText =
     med.instructions === 'before_food' ? 'Before food'
     : med.instructions === 'after_food' ? 'After food'
     : med.instructions === 'with_water' ? 'With water'
-    : med.instructions ?? '—';
+    : med.instructions === 'with_food' ? 'With food'
+    : med.instructions === 'none' || !med.instructions ? '—'
+    : med.instructions;
   const durationText =
     med.courseStart && med.courseEnd ? `${med.courseStart} → ${med.courseEnd}`
     : med.courseStart ? `Since ${med.courseStart}` : '—';
+
+  const everyDayText =
+    med.everyDay === undefined ? '—' : med.everyDay ? 'Every day' : 'Specific days';
+
+  const daysText =
+    med.everyDay
+      ? 'Mon – Sun'
+      : med.days && med.days.length ? med.days.join(' • ') : '—';
 
   const onEdit = () => navigation.navigate('AddEditMedicine', { editId: med.id });
   const onDelete = async () => {
@@ -87,10 +105,12 @@ const MedicineDetailScreen = () => {
           ios:shadow-offset-[0,3] ios:shadow-radius-[6]
         "
       >
-        <Row label="Dosage" value={dosageLine || '—'} />
+        <Row label="Dosage" value={dosageLine} />
         <Row label="Times" value={timesLine} />
         <Row label="Instructions" value={instructionsText} />
         <Row label="Duration" value={durationText} />
+        <Row label="Schedule" value={everyDayText} />
+        <Row label="Days" value={daysText} />
         {med.notes ? <Row label="Notes" value={med.notes} /> : null}
       </View>
 

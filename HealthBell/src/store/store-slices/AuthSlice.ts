@@ -36,7 +36,6 @@ const authSlice = createSlice({
 export const { setUser, clearUser } = authSlice.actions;
 export default authSlice.reducer;
 
-// Selectors بدون any وبدون Rootstate
 export const selectIsAuthenticated = (s: { auth: AuthState }) =>
   s.auth.isAuthenticated;
 

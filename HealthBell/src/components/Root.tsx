@@ -9,6 +9,7 @@ import { persistor,store } from "../store/store";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { onAuthStateChanged } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { View, ActivityIndicator } from 'react-native';
 import AuthStack from '../navigation/AuthStack';
@@ -18,7 +19,7 @@ const queryClient = new QueryClient();
 
 export default function Root() {
   const [authChecked, setAuthChecked] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -26,7 +27,7 @@ export default function Root() {
       setAuthChecked(true);
 
       if (firebaseUser) {
-        (store.dispatch as any)(loadMedicines(firebaseUser.uid));
+        store.dispatch(loadMedicines(firebaseUser.uid));
       }
     });
     return unsubscribe;

@@ -33,16 +33,16 @@ export default function TodayScreen() {
   useEffect(() => {
     const update = () => setNow(new Date());
     const msToNextMinute = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+
     const timeoutId = setTimeout(() => {
       update();
-      const intervalId = setInterval(update, 60000);
-      // حفظ interval في closure لتصفيته مع return
-      (update as any)._iid = intervalId;
+      intervalId = setInterval(update, 60000);
     }, msToNextMinute);
 
     return () => {
       clearTimeout(timeoutId);
-      if ((update as any)._iid) clearInterval((update as any)._iid);
+      if (intervalId !== undefined) clearInterval(intervalId);
     };
   }, [now]);
 
@@ -127,6 +127,8 @@ export default function TodayScreen() {
     );
   };
 
+  const listContentContainerStyle = sorted.length ? undefined : { flex: 1 };
+
   return (
     <SafeAreaView className="flex-1 bg-white px-4 pt-2" edges={[]}>
       <FlatList
@@ -149,7 +151,7 @@ export default function TodayScreen() {
           </View>
         }
         // إبقاء التوسيط العمودي عند عدم وجود عناصر
-        contentContainerStyle={sorted.length ? undefined : { flex: 1 }}
+        contentContainerStyle={listContentContainerStyle}
       />
     </SafeAreaView>
   );
@@ -185,10 +187,10 @@ function buildDosesFromMedicines(medicines: Medicine[]): Dose[] {
   const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
 
   return medicines.flatMap(med => {
-    const everyDay = (med as any).everyDay ?? true;
-    const days: string[] | undefined = (med as any).days;
-    const courseStart: string | undefined = (med as any).courseStart;
-    const courseEnd: string | undefined = (med as any).courseEnd;
+    const everyDay = med.everyDay ?? true;
+    const days: string[] | undefined = med.days;
+    const courseStart: string | undefined = med.courseStart;
+    const courseEnd: string | undefined = med.courseEnd;
 
     const inDateRange =
       (!courseStart || courseStart <= todayStr) &&
@@ -202,7 +204,7 @@ function buildDosesFromMedicines(medicines: Medicine[]): Dose[] {
 
     if (!activeToday) return [];
 
-    const times: string[] = (med as any).times ?? [];
+    const times: string[] = med.times ?? [];
 
     if (!times.length) {
       return [];

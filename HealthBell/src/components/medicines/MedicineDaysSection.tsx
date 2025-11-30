@@ -4,14 +4,18 @@ import { View, TouchableOpacity } from 'react-native';
 import MyText from '../MyText';
 import { Field, Chip } from './MedicineFormUI';
 import type { MedicineFormValues } from './MedicineForm';
+import type { FormikErrors, FormikTouched } from 'formik';
 
 const WEEKDAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as const;
 
 type Props = {
   values: MedicineFormValues;
-  setFieldValue: (field: string, value: any) => void;
-  errors?: any;
-  touched?: any;
+  setFieldValue: <K extends keyof MedicineFormValues>(
+    field: K,
+    value: MedicineFormValues[K]
+  ) => void;
+  errors?: FormikErrors<MedicineFormValues>;
+  touched?: FormikTouched<MedicineFormValues>;
 };
 
 export default function MedicineDaysSection({ values, setFieldValue, errors, touched }: Props) {

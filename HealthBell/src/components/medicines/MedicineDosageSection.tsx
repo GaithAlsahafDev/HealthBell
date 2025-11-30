@@ -1,4 +1,4 @@
-// src/components/medicines/MedicineDosageSection.tsx
+// src/components/medicines/MedicineDosageSection.tsx 
 import React from 'react';
 import { View, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -6,12 +6,16 @@ import MyText from '../MyText';
 import MyTextInput from '../MyTextInput';
 import { Field, UNITS, type Unit } from './MedicineFormUI';
 import type { MedicineFormValues } from './MedicineForm';
+import type { FormikErrors, FormikTouched } from 'formik';
 
 type Props = {
   values: MedicineFormValues;
-  setFieldValue: (field: string, value: any) => void;
-  errors?: any;
-  touched?: any;
+  setFieldValue: <K extends keyof MedicineFormValues>(
+    field: K,
+    value: MedicineFormValues[K]
+  ) => void;
+  errors?: FormikErrors<MedicineFormValues>;
+  touched?: FormikTouched<MedicineFormValues>;
   doseAmountRef?: React.RefObject<TextInput | null>;
   doseTextRef?: React.RefObject<TextInput | null>;
 };
@@ -24,8 +28,7 @@ export default function MedicineDosageSection({ values, setFieldValue, errors, t
           ref={doseAmountRef}
           value={values.doseAmount}
           onChangeText={(v) => setFieldValue("doseAmount", v)}
-          className="flex-1 mr-2 h-12 border border-gray-200 rounded-[10px] bg-white text-gray-900 text-[16px]"
-          style={{ paddingHorizontal: 16 }}
+          className="flex-1 mr-2 h-12 border border-gray-200 rounded-[10px] bg-white text-gray-900 text-[16px] px-4"
           placeholder="500"
           keyboardType="numeric"
           returnKeyType="next"

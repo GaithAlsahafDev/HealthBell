@@ -11,6 +11,7 @@ import { setUser } from '../store/store-slices/AuthSlice';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FirebaseError } from 'firebase/app';
 
 const schema = Yup.object({
   email: Yup.string().email('Invalid email').required('Required'),
@@ -22,21 +23,28 @@ export default function LoginScreen({ navigation }: AuthStackNavProps<'Login'>) 
 
   const passwordInputRef = useRef<TextInput | null>(null);
   const { top } = useSafeAreaInsets();
+  const containerStyle = { paddingTop: top };
 
   const handleLogin = async (email: string, password: string) => {
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       dispatch(setUser({ uid: cred.user.uid, email: cred.user.email }));
-    } catch (error: any) {
-      if (error?.code === 'auth/user-not-found') {
-        Alert.alert('Login Error', error.message, [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Register'),
-          },
-        ]);
-      } else {
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        if (error.code === 'auth/user-not-found') {
+          Alert.alert('Login Error', error.message, [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('Register'),
+            },
+          ]);
+        } else {
+          Alert.alert('Login Error', error.message);
+        }
+      } else if (error instanceof Error) {
         Alert.alert('Login Error', error.message);
+      } else {
+        Alert.alert('Login Error', 'An unexpected error occurred.');
       }
     }
   };
@@ -55,7 +63,7 @@ export default function LoginScreen({ navigation }: AuthStackNavProps<'Login'>) 
   });
 
   return (
-    <View className="flex-1 bg-white" style={{ paddingTop: top }}>
+    <View className="flex-1 bg-white" style={containerStyle}>
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -70,7 +78,7 @@ export default function LoginScreen({ navigation }: AuthStackNavProps<'Login'>) 
             <View className="items-center mb-8">
               <Image
                 source={require('../../assets/health-bell-logo.png')}
-                style={{ width: 200, height: 200 }}
+                className="w-[200px] h-[200px]"
                 resizeMode="contain"
               />
               <MyText className="text-3xl font-bold mt-4">Welcome Back</MyText>

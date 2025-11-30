@@ -3,12 +3,16 @@ import React from 'react';
 import { Field, InstructionsPicker } from './MedicineFormUI';
 import type { MedicineFormValues } from './MedicineForm';
 import MyText from '../MyText';
+import type { FormikErrors, FormikTouched } from 'formik';
 
 type Props = {
   values: MedicineFormValues;
-  setFieldValue: (field: string, value: any) => void;
-  errors?: any;
-  touched?: any;
+  setFieldValue: <K extends keyof MedicineFormValues>(
+    field: K,
+    value: MedicineFormValues[K]
+  ) => void;
+  errors?: FormikErrors<MedicineFormValues>;
+  touched?: FormikTouched<MedicineFormValues>;
 };
 
 export default function MedicineInstructionsSection({ values, setFieldValue, errors, touched }: Props) {

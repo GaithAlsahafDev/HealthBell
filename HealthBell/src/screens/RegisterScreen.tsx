@@ -11,6 +11,7 @@ import { setUser } from '../store/store-slices/AuthSlice';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FirebaseError } from 'firebase/app';
 
 const schema = Yup.object({
   email: Yup.string().email('Invalid email').required('Required'),
@@ -21,13 +22,20 @@ export default function RegisterScreen({ navigation }: AuthStackNavProps<'Regist
   const dispatch = useAppDispatch();
   const passwordInputRef = useRef<TextInput | null>(null);
   const { top } = useSafeAreaInsets();
+  const containerStyle = { paddingTop: top };
 
   const handleRegister = async (email: string, password: string) => {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       dispatch(setUser({ uid: cred.user.uid, email: cred.user.email }));
-    } catch (error: any) {
-      Alert.alert('Register Error', error.message);
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        Alert.alert('Register Error', error.message);
+      } else if (error instanceof Error) {
+        Alert.alert('Register Error', error.message);
+      } else {
+        Alert.alert('Register Error', 'An unexpected error occurred.');
+      }
     }
   };
 
@@ -45,7 +53,7 @@ export default function RegisterScreen({ navigation }: AuthStackNavProps<'Regist
   });
 
   return (
-    <View className="flex-1 bg-white" style={{ paddingTop: top }}>
+    <View className="flex-1 bg-white" style={containerStyle}>
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -59,7 +67,7 @@ export default function RegisterScreen({ navigation }: AuthStackNavProps<'Regist
           <View className="items-center mb-8">
             <Image
               source={require('../../assets/health-bell-logo.png')}
-              style={{ width: 200, height: 200 }}
+              className="w-[200px] h-[200px]"
               resizeMode="contain"
             />
             <MyText className="text-3xl font-bold mt-4">Create Account</MyText>

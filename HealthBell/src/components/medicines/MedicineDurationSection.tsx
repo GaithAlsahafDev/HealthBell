@@ -5,12 +5,16 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import MyText from '../MyText';
 import { Field } from './MedicineFormUI';
 import type { MedicineFormValues } from './MedicineForm';
+import type { FormikErrors, FormikTouched } from 'formik';
 
 type Props = {
   values: MedicineFormValues;
-  setFieldValue: (field: string, value: any) => void;
-  errors?: any;
-  touched?: any;
+  setFieldValue: <K extends keyof MedicineFormValues>(
+    field: K,
+    value: MedicineFormValues[K]
+  ) => void;
+  errors?: FormikErrors<MedicineFormValues>;
+  touched?: FormikTouched<MedicineFormValues>;
 };
 
 export default function MedicineDurationSection({ values, setFieldValue, errors, touched }: Props) {

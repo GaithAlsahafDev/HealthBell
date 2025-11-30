@@ -25,6 +25,10 @@ const schema = Yup.object({
   times: Yup.array()
     .min(1, "At least one time is required"),
 
+  courseStart: Yup.string()
+    .trim()
+    .required("Course start date is required"),
+
   courseEnd: Yup.string().test(
     "end-after-start",
     "End date must be after start date",

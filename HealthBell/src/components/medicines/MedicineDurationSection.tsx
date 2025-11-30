@@ -22,7 +22,7 @@ export default function MedicineDurationSection({ values, setFieldValue, errors,
   const [showEndPicker, setShowEndPicker] = useState(false);
 
   return (
-    <Field label="Treatment duration">
+    <Field label="Treatment duration *">
       <View className="flex-row items-center">
         <TouchableOpacity
           onPress={() => setShowStartPicker(true)}
@@ -73,6 +73,10 @@ export default function MedicineDurationSection({ values, setFieldValue, errors,
           }}
         />
       )}
+
+      {touched?.courseStart && errors?.courseStart ? (
+        <MyText className="text-red-500 text-xs mt-1">{errors.courseStart}</MyText>
+      ) : null}
 
       {touched?.courseEnd && errors?.courseEnd ? (
         <MyText className="text-red-500 text-xs mt-1">{errors.courseEnd}</MyText>

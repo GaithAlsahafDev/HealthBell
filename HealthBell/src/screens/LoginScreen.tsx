@@ -8,7 +8,7 @@ import { auth } from '../config/firebase';
 import type { AuthStackNavProps } from '../navigation/types';
 import { useAppDispatch } from '../hooks/reduxHooks';
 import { setUser } from '../store/store-slices/AuthSlice';
-import { Formik } from 'formik';
+import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -31,6 +31,19 @@ export default function LoginScreen({ navigation }: AuthStackNavProps<'Login'>) 
       Alert.alert('Login Error', error.message);
     }
   };
+
+  const {
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    values,
+    errors,
+    touched,
+  } = useFormik({
+    initialValues: { email: '', password: '' },
+    validationSchema: schema,
+    onSubmit: values => handleLogin(values.email, values.password),
+  });
 
   return (
     <View className="flex-1 bg-white" style={{ paddingTop: top }}>
@@ -55,56 +68,48 @@ export default function LoginScreen({ navigation }: AuthStackNavProps<'Login'>) 
               <MyText className="text-gray-500">Login to continue</MyText>
             </View>
 
-            <Formik
-              initialValues={{ email: '', password: '' }}
-              validationSchema={schema}
-              onSubmit={values => handleLogin(values.email, values.password)}
-            >
-              {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                <View className="gap-4">
-                  <MyTextInput
-                    placeholder="Email"
-                    value={values.email}
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    autoComplete='email'
-                    returnKeyType="next"
-                    onSubmitEditing={() => {
-                      passwordInputRef.current?.focus();
-                    }}
-                  />
+            <View className="gap-4">
+              <MyTextInput
+                placeholder="Email"
+                value={values.email}
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoComplete='email'
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  passwordInputRef.current?.focus();
+                }}
+              />
 
-                  {touched.email && errors.email ? (
-                    <MyText className="text-red-500 text-xs">{errors.email}</MyText>
-                  ) : null}
+              {touched.email && errors.email ? (
+                <MyText className="text-red-500 text-xs">{errors.email}</MyText>
+              ) : null}
 
-                  <MyTextInput
-                    ref={passwordInputRef}
-                    placeholder="Password"
-                    value={values.password}
-                    onChangeText={handleChange('password')}
-                    onBlur={handleBlur('password')}
-                    autoComplete='password'
-                    secureTextEntry
-                    returnKeyType="done"
-                    onSubmitEditing={() => handleSubmit()}
-                  />
+              <MyTextInput
+                ref={passwordInputRef}
+                placeholder="Password"
+                value={values.password}
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                autoComplete='password'
+                secureTextEntry
+                returnKeyType="done"
+                onSubmitEditing={() => handleSubmit()}
+              />
 
-                  {touched.password && errors.password ? (
-                    <MyText className="text-red-500 text-xs">{errors.password}</MyText>
-                  ) : null}
+              {touched.password && errors.password ? (
+                <MyText className="text-red-500 text-xs">{errors.password}</MyText>
+              ) : null}
 
-                  <Pressable
-                    className="bg-sky-500 py-3 rounded-xl mt-2 items-center"
-                    onPress={() => handleSubmit()}
-                  >
-                    <MyText className="text-white font-semibold text-base">Login</MyText>
-                  </Pressable>
-                </View>
-              )}
-            </Formik>
+              <Pressable
+                className="bg-sky-500 py-3 rounded-xl mt-2 items-center"
+                onPress={() => handleSubmit()}
+              >
+                <MyText className="text-white font-semibold text-base">Login</MyText>
+              </Pressable>
+            </View>
 
             <View className="items-center mt-6">
               <MyText className="text-gray-600">Don't have an account?</MyText>

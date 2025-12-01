@@ -1,20 +1,36 @@
-import React, { useRef, useState, useCallback } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+// src/screens/HealthTipsScreen.tsx
+import React, { useRef, useState, useCallback, useEffect } from 'react';
+import { View, TouchableOpacity, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MyText from '../components/MyText';
 
 export default function HealthTipsScreen() {
   const webRef = useRef<WebView>(null);
   const [canGoBack, setCanGoBack] = useState(false);
+  const { bottom } = useSafeAreaInsets();
+  const containerStyle = { paddingBottom: bottom };
 
   const goBack = useCallback(() => {
     if (canGoBack) webRef.current?.goBack();
   }, [canGoBack]);
 
+  useEffect(() => {
+    const onHardwareBackPress = () => {
+      if (canGoBack) {
+        webRef.current?.goBack();
+        return true;
+      }
+      return false;
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onHardwareBackPress);
+    return () => subscription.remove();
+  }, [canGoBack]);
+
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={[]}>
+    <View className="flex-1 bg-white" style={containerStyle}>
       <View className="flex-row items-center px-3 py-2 bg-gray-50 border-b border-gray-200">
 
         {canGoBack && (
@@ -40,9 +56,9 @@ export default function HealthTipsScreen() {
         ref={webRef}
         source={{ uri: 'https://www.healthline.com/health' }}
         startInLoadingState
-        onNavigationStateChange={(nav) => setCanGoBack(nav.canGoBack)}
+        onNavigationStateChange={(nav) => setCanGoBack(Boolean(nav.canGoBack))}
         className="flex-1"
       />
-    </SafeAreaView>
+    </View>
   );
 }

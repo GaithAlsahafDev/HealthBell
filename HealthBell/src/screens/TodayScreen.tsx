@@ -1,10 +1,10 @@
 // src/screens/TodayScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../components/Button';
 import MyText from '../components/MyText';
 import { useAppSelector } from '../hooks/reduxHooks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Dose = {
   id: string;
@@ -19,6 +19,9 @@ export default function TodayScreen() {
   const [doses, setDoses] = useState<Dose[]>([]);
   const [sorted, setSorted] = useState<Dose[]>([]);
   const [now, setNow] = useState(new Date());
+
+  const { bottom } = useSafeAreaInsets();
+  const containerStyle = { paddingBottom: bottom };
 
   useEffect(() => {
     const initial = buildDosesFromMedicines(medicines);
@@ -130,7 +133,7 @@ export default function TodayScreen() {
   const listContentContainerStyle = sorted.length ? undefined : { flex: 1 };
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-4 pt-2" edges={[]}>
+    <View className="flex-1 bg-white px-4 pt-2" style={containerStyle}>
       <FlatList
         data={sorted}
         keyExtractor={it => it.id}
@@ -153,7 +156,7 @@ export default function TodayScreen() {
         // إبقاء التوسيط العمودي عند عدم وجود عناصر
         contentContainerStyle={listContentContainerStyle}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

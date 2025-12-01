@@ -1,7 +1,6 @@
 // src/screens/medicines/MedicinesListScreen.tsx
 import React, { useEffect } from 'react';
 import { View, FlatList, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { MedicinesStackNavProps } from '../../navigation/types';
@@ -12,6 +11,7 @@ import MyText from '../../components/MyText';
 import { medicinesApi } from '../../services/medicinesApi';
 import { add, clearAll } from '../../store/store-slices/MedicinesSlice';
 import { selectAuthUid } from '../../store/store-slices/AuthSlice';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function MedicinesListScreen() {
   const navigation = useNavigation<MedicinesStackNavProps<'MedicinesList'>['navigation']>();
@@ -19,6 +19,9 @@ export default function MedicinesListScreen() {
 
   const cached = useAppSelector(s => s.medicines) as Medicine[];
   const uid = useAppSelector(selectAuthUid);
+
+  const { bottom } = useSafeAreaInsets();
+  const containerStyle = { paddingBottom: bottom };
 
   useEffect(() => {
     const load = async () => {
@@ -54,7 +57,7 @@ export default function MedicinesListScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={[]}>
+    <View className="flex-1 bg-white" style={containerStyle}>
       <View className="flex-1">
         <FlatList
           data={list}
@@ -76,6 +79,6 @@ export default function MedicinesListScreen() {
           <Button label="Add medicine" onPress={openAdd} />
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

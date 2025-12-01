@@ -1,10 +1,13 @@
-// src/screens/TodayScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, FlatList } from 'react-native';
-import Button from '../components/Button';
 import MyText from '../components/MyText';
 import { useAppSelector } from '../hooks/reduxHooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import NetInfo from '@react-native-community/netinfo';
+
+import TodayHeader from '../components/today-screen/TodayHeader';
+import ConnectionStatusBar from '../components/today-screen/ConnectionStatusBar';
+import DoseItem from '../components/today-screen/DoseItem';
 
 type Dose = {
   id: string;
@@ -19,6 +22,8 @@ export default function TodayScreen() {
   const [doses, setDoses] = useState<Dose[]>([]);
   const [sorted, setSorted] = useState<Dose[]>([]);
   const [now, setNow] = useState(new Date());
+  const [isOnline, setIsOnline] = useState<boolean | null>(null);
+  const [lastOnline, setLastOnline] = useState<Date | null>(null);
 
   const { bottom } = useSafeAreaInsets();
   const containerStyle = { paddingBottom: bottom };
@@ -32,7 +37,6 @@ export default function TodayScreen() {
     setSorted([...doses].sort((a, b) => a.time.localeCompare(b.time)));
   }, [doses]);
 
-  // ← إضافة: تحديث الوقت كل دقيقة بدقة على رأس الدقيقة
   useEffect(() => {
     const update = () => setNow(new Date());
     const msToNextMinute = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
@@ -49,7 +53,23 @@ export default function TodayScreen() {
     };
   }, [now]);
 
-  // جعل الجرعات التي مضى وقتها تتحول تلقائياً إلى "missed"
+  useEffect(() => {
+    const handleStateChange = (state: { isConnected: boolean | null }) => {
+      const connected = !!state.isConnected;
+      setIsOnline(connected);
+      if (connected) {
+        setLastOnline(new Date());
+      }
+    };
+
+    NetInfo.fetch().then(handleStateChange).catch(() => {
+      setIsOnline(null);
+    });
+
+    const unsubscribe = NetInfo.addEventListener(handleStateChange);
+    return unsubscribe;
+  }, []);
+
   useEffect(() => {
     const nowMinutes = now.getHours() * 60 + now.getMinutes();
     let changed = false;
@@ -77,60 +97,20 @@ export default function TodayScreen() {
     setDoses(prev => prev.map(d => (d.id === id ? { ...d, status } : d)));
   };
 
-  const renderItem = ({ item }: { item: Dose }) => {
-    const isTaken = item.status === 'taken';
-    const isMissed = item.status === 'missed';
-
-    return (
-      <View className="rounded-2xl border border-gray-200 bg-white px-4 py-3">
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-3 shrink pr-3">
-            <View
-              className={`h-2.5 w-2.5 rounded-full ${
-                isTaken ? 'bg-green-500' : isMissed ? 'bg-red-500' : 'bg-amber-400'
-              }`}
-            />
-            <View className="shrink">
-              <MyText className="text-[17px] font-semibold text-gray-900">{item.medicineName}</MyText>
-              <View className="flex-row items-center mt-0.5">
-                <MyText className="text-[12px] text-gray-500">{item.time}</MyText>
-                <View
-                  className={`ml-2 px-2 py-0.5 rounded-full ${
-                    isTaken ? 'bg-green-100' : isMissed ? 'bg-red-100' : 'bg-amber-100'
-                  }`}
-                >
-                  <MyText
-                    className={`text-[11px] font-medium ${
-                      isTaken ? 'text-green-700' : isMissed ? 'text-red-700' : 'text-amber-700'
-                    }`}
-                  >
-                    {labelFor(item.status)}
-                  </MyText>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          <View className="flex-row gap-2">
-            <Button
-              label="Taken"
-              variant="primary"
-              onPress={() => setStatus(item.id, 'taken')}
-              // disabled={isTaken}
-            />
-            <Button
-              label="Missed"
-              variant="outline"
-              onPress={() => setStatus(item.id, 'missed')}
-              // disabled={isMissed}
-            />
-          </View>
-        </View>
-      </View>
-    );
-  };
+  const renderItem = ({ item }: { item: Dose }) => (
+    <DoseItem item={item} onSetStatus={setStatus} />
+  );
 
   const listContentContainerStyle = sorted.length ? undefined : { flex: 1 };
+
+  const connectionText =
+    isOnline === null
+      ? 'Checking connection…'
+      : isOnline
+      ? 'Online – data will sync automatically when needed.'
+      : lastOnline
+      ? `Offline – last online ${formatDateTime(lastOnline)}`
+      : 'Offline – no previous online session detected.';
 
   return (
     <View className="flex-1 bg-white px-4 pt-2" style={containerStyle}>
@@ -139,22 +119,19 @@ export default function TodayScreen() {
         keyExtractor={it => it.id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View className="h-3" />}
-        ListHeaderComponent={
-          <View className="py-1">
-            <View className="self-start rounded-full bg-gray-100 px-3 py-1.5">
-              <MyText className="text-[12px] font-medium text-gray-700 tracking-wide">
-                {formatDate(new Date().toISOString())} • {formatTime(now)}
-              </MyText>
-            </View>
-          </View>
-        }
+        ListHeaderComponent={<TodayHeader now={now} />}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center">
             <MyText className="text-gray-500">No doses scheduled for today.</MyText>
           </View>
         }
-        // إبقاء التوسيط العمودي عند عدم وجود عناصر
         contentContainerStyle={listContentContainerStyle}
+      />
+
+      <ConnectionStatusBar
+        isOnline={isOnline}
+        lastOnline={lastOnline}
+        connectionText={connectionText}
       />
     </View>
   );
@@ -167,18 +144,11 @@ function labelFor(s: 'upcoming' | 'taken' | 'missed') {
   return 'Upcoming';
 }
 
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
+function formatDateTime(d: Date) {
   return new Intl.DateTimeFormat(undefined, {
     weekday: 'short',
     month: 'short',
     day: '2-digit',
-    year: 'numeric',
-  }).format(d);
-}
-
-function formatTime(d: Date) {
-  return new Intl.DateTimeFormat(undefined, {
     hour: '2-digit',
     minute: '2-digit',
   }).format(d);
@@ -186,8 +156,8 @@ function formatTime(d: Date) {
 
 function buildDosesFromMedicines(medicines: Medicine[]): Dose[] {
   const today = new Date();
-  const weekdayLabel = new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(today); // Mon, Tue, ...
-  const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
+  const weekdayLabel = new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(today);
+  const todayStr = today.toISOString().slice(0, 10);
 
   return medicines.flatMap(med => {
     const everyDay = med.everyDay ?? true;

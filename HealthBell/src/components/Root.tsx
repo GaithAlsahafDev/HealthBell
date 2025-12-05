@@ -11,20 +11,23 @@ import { PersistGate } from "redux-persist/integration/react";
 import { onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { View, ActivityIndicator } from 'react-native';
 import AuthStack from '../navigation/AuthStack';
 import { loadMedicines } from "../store/thunks/loadMedicines";
+import * as SplashScreen from "expo-splash-screen";
 
 const queryClient = new QueryClient();
 
+SplashScreen.preventAutoHideAsync();
+
 export default function Root() {
-  const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
+    setIsAuthLoading(true);
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
-      setAuthChecked(true);
+      setIsAuthLoading(false);
 
       if (firebaseUser) {
         store.dispatch(loadMedicines(firebaseUser.uid));
@@ -33,12 +36,14 @@ export default function Root() {
     return unsubscribe;
   }, []);
 
-  if (!authChecked) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
+  useEffect(() => {
+    if (!isAuthLoading) {
+      SplashScreen.hideAsync();
+    }
+  }, [isAuthLoading]);
+
+  if (isAuthLoading) {
+    return null;
   }
 
   return (

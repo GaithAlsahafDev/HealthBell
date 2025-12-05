@@ -23,6 +23,7 @@
     "axios": "^1.13.2",
     "babel-preset-expo": "~54.0.0",
     "expo": "~54.0.20",
+    "expo-splash-screen": "~31.0.12",
     "expo-status-bar": "~3.0.8",
     "firebase": "^12.5.0",
     "formik": "^2.4.9",
@@ -43,6 +44,7 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
+    "@firebase/auth": "^1.11.1",
     "@types/react": "~19.1.0",
     "prettier-plugin-tailwindcss": "0.5.11",
     "tailwindcss": "3.4.17",

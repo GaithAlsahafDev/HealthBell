@@ -1,11 +1,9 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { MedicinesStackParamList } from './types';
 import MedicinesListScreen from '../screens/medicines/MedicinesListScreen';
 import AddEditMedicineScreen from '../screens/medicines/AddEditMedicineScreen';
 import MedicineDetailScreen from '../screens/medicines/MedicineDetailScreen';
-import { Pressable } from 'react-native';
 
 const Stack = createStackNavigator<MedicinesStackParamList>();
 

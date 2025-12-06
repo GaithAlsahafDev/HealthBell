@@ -12,7 +12,6 @@ export const medicinesApi = {
 
     const items: Medicine[] = snapshot.docs.map(d => {
       const data = d.data() as Medicine;
-      // ضمان وجود id: نستخدم حقل id إن وُجد، وإلا document id
       return {
         ...data,
         id: data.id ?? d.id,

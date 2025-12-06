@@ -29,17 +29,3 @@ interface Medicine {
   everyDay?: boolean;
   days?: string[];
 }
-
-
-type Medicines = Medicine[];
-
-
-interface MedicinesFile {
-  medicines: Medicines;
-}
-
-
-declare module "*.json" {
-  const value: unknown;
-  export default value;
-}

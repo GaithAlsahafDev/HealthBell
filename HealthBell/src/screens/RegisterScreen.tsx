@@ -18,7 +18,7 @@ const schema = Yup.object({
   password: Yup.string().min(6, 'Min 6 chars').required('Required'),
 });
 
-export default function RegisterScreen({ navigation }: AuthStackNavProps<'Register'>) {
+export default function RegisterScreen() {
   const dispatch = useAppDispatch();
   const passwordInputRef = useRef<TextInput | null>(null);
   const { top } = useSafeAreaInsets();

@@ -12,18 +12,20 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FirebaseError } from 'firebase/app';
+import { useNavigation } from '@react-navigation/native';
 
 const schema = Yup.object({
   email: Yup.string().email('Invalid email').required('Required'),
   password: Yup.string().min(6, 'Min 6 chars').required('Required'),
 });
 
-export default function LoginScreen({ navigation }: AuthStackNavProps<'Login'>) {
+export default function LoginScreen() {
   const dispatch = useAppDispatch();
 
   const passwordInputRef = useRef<TextInput | null>(null);
   const { top } = useSafeAreaInsets();
   const containerStyle = { paddingTop: top };
+  const navigation = useNavigation<AuthStackNavProps<'Login'>['navigation']>();
 
   const handleLogin = async (email: string, password: string) => {
     try {

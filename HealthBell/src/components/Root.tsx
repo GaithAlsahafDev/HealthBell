@@ -48,9 +48,9 @@ export default function Root() {
     if (!isAuthLoading && fontLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [isAuthLoading]);
+  }, [isAuthLoading, fontLoaded]);
 
-  if (isAuthLoading) {
+  if (isAuthLoading || !fontLoaded) {
     return null;
   }
 

@@ -19,7 +19,7 @@ export default function Button({ label, onPress, variant = 'primary' }: ButtonPr
       activeOpacity={0.7}
     >
       <Text
-        className={`font-semibold font-[Poppins-Black] ${
+        className={`font-semibold font-[PoppinsBlack] ${
           isPrimary ? 'text-white' : 'text-gray-700'
         }`}
       >

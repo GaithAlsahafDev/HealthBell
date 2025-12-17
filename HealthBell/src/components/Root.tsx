@@ -15,6 +15,10 @@ import AuthStack from '../navigation/AuthStack';
 import { loadMedicines } from "../store/thunks/loadMedicines";
 import * as SplashScreen from "expo-splash-screen";
 
+import "../../global.css";
+
+import { useFonts } from "expo-font";
+
 const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
@@ -22,6 +26,10 @@ SplashScreen.preventAutoHideAsync();
 export default function Root() {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  const [fontLoaded] = useFonts({
+    PoppinsBlack: require("../../assets/fonts/Poppins-Black.ttf"),
+  });
 
   useEffect(() => {
     setIsAuthLoading(true);
@@ -37,7 +45,7 @@ export default function Root() {
   }, []);
 
   useEffect(() => {
-    if (!isAuthLoading) {
+    if (!isAuthLoading && fontLoaded) {
       SplashScreen.hideAsync();
     }
   }, [isAuthLoading]);

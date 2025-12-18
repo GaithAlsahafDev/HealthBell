@@ -7,13 +7,13 @@ import type { AuthStackParamList } from './types';
 
 const Stack = createStackNavigator<AuthStackParamList>();
 
-export default function AuthStack() {
+const AuthStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Login"
         component={LoginScreen}
-        options={{ title: 'Login' , headerShown: false}}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="Register"
@@ -23,3 +23,5 @@ export default function AuthStack() {
     </Stack.Navigator>
   );
 }
+
+export default AuthStack;

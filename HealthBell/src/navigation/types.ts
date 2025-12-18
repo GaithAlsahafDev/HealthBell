@@ -32,3 +32,13 @@ export type TabsNavProps<T extends keyof TabsParamList> =
 
 export type AuthStackNavProps<T extends keyof AuthStackParamList> =
   StackScreenProps<AuthStackParamList, T>;
+// =============================================================================
+// React Navigation Global Param List
+  declare global {
+  namespace ReactNavigation {
+    interface RootParamList
+      extends AuthStackParamList,
+        TabsParamList,
+        MedicinesStackParamList {}
+  }
+}

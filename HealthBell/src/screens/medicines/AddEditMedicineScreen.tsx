@@ -8,7 +8,7 @@ import { add, update } from '../../store/store-slices/MedicinesSlice';
 import MedicineForm from '../../components/medicines/MedicineForm';
 import NetInfo from "@react-native-community/netinfo";
 import { medicinesApi } from '../../services/medicinesApi';
-import { selectAuthUid } from '../../store/store-slices/AuthSlice';
+import { auth } from '../../config/firebase';
 
 export default function AddEditMedicineScreen() {
   const navigation = useNavigation<MedicinesStackNavProps<'AddEditMedicine'>['navigation']>();
@@ -17,7 +17,7 @@ export default function AddEditMedicineScreen() {
 
   const dispatch = useAppDispatch();
   const medicines = useAppSelector(s => s.medicines) as Medicine[];
-  const uid = useAppSelector(selectAuthUid);
+  const uid = auth.currentUser?.uid;
 
   const editing = useMemo(() => medicines.find(m => m.id === editId), [editId, medicines]);
 

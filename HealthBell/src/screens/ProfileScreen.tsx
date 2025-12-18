@@ -5,14 +5,13 @@ import Button from '../components/Button';
 import ProfileCard from '../components/ProfileCard';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
-import { clearUser, selectAuthEmail } from '../store/store-slices/AuthSlice';
+import { useAppDispatch } from '../hooks/reduxHooks';
 import { clearAll } from '../store/store-slices/MedicinesSlice';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
-  const email = useAppSelector(selectAuthEmail);
+  const email = auth.currentUser?.email;
 
   const { top } = useSafeAreaInsets();
   const containerStyle = { paddingTop: top };
@@ -20,7 +19,6 @@ export default function ProfileScreen() {
   const performLogout = async () => {
     try {
       await signOut(auth);
-      dispatch(clearUser());
       dispatch(clearAll());
     } catch (error) {
       console.log('Logout error:', error);

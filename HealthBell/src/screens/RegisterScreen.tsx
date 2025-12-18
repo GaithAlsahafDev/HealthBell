@@ -7,8 +7,6 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import type { AuthStackNavProps } from '../navigation/types';
 import { useRoute } from '@react-navigation/native';
-import { useAppDispatch } from '../hooks/reduxHooks';
-import { setUser } from '../store/store-slices/AuthSlice';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,7 +18,6 @@ const schema = Yup.object({
 });
 
 export default function RegisterScreen() {
-  const dispatch = useAppDispatch();
   const passwordInputRef = useRef<TextInput | null>(null);
   const { top } = useSafeAreaInsets();
   const containerStyle = { paddingTop: top };
@@ -29,8 +26,7 @@ export default function RegisterScreen() {
 
   const handleRegister = async (email: string, password: string) => {
     try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      dispatch(setUser({ uid: cred.user.uid, email: cred.user.email }));
+      await createUserWithEmailAndPassword(auth, email, password);
     } catch (error) {
       if (error instanceof FirebaseError) {
         Alert.alert('Register Error', error.message);

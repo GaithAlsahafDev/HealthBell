@@ -10,7 +10,7 @@ import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import MyText from '../../components/MyText';
 import { medicinesApi } from '../../services/medicinesApi';
 import { add, clearAll } from '../../store/store-slices/MedicinesSlice';
-import { selectAuthUid } from '../../store/store-slices/AuthSlice';
+import { auth } from '../../config/firebase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function MedicinesListScreen() {
@@ -18,7 +18,7 @@ export default function MedicinesListScreen() {
   const dispatch = useAppDispatch();
 
   const cached = useAppSelector(s => s.medicines) as Medicine[];
-  const uid = useAppSelector(selectAuthUid);
+  const uid = auth.currentUser?.uid;
 
   const { bottom } = useSafeAreaInsets();
   const containerStyle = { paddingBottom: bottom };
@@ -71,9 +71,6 @@ export default function MedicinesListScreen() {
           }
         />
 
-        {/* الشارة: فوق الزر وعلى الجهة اليسرى */}
-
-        {/* الزر ثابت أسفل اليمين */}
         <View className="absolute right-4 bottom-6 bg-sky-500 px-4 h-12 rounded-full justify-center items-center flex-row gap-1.5">
           <MaterialCommunityIcons name="plus" size={20} color="#fff" />
           <Button label="Add medicine" onPress={openAdd} />

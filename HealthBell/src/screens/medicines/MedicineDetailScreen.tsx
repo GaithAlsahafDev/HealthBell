@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { remove } from '../../store/store-slices/MedicinesSlice';
 import NetInfo from "@react-native-community/netinfo";
 import { medicinesApi } from '../../services/medicinesApi';
-import { selectAuthUid } from '../../store/store-slices/AuthSlice';
+import { auth } from '../../config/firebase';
 
 const MedicineDetailScreen = () => {
   const navigation = useNavigation<MedicinesStackNavProps<'MedicineDetail'>['navigation']>();
@@ -19,7 +19,7 @@ const MedicineDetailScreen = () => {
 
   const dispatch = useAppDispatch();
   const medicines = useAppSelector(s => s.medicines) as Medicine[];
-  const uid = useAppSelector(selectAuthUid);
+  const uid = auth.currentUser?.uid;
 
   const med = useMemo(() => medicines.find(m => m.id === data?.id), [data?.id, medicines]);
 

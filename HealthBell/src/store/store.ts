@@ -13,7 +13,6 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import medicinesReducer from "./store-slices/MedicinesSlice";
-import authReducer from "./store-slices/AuthSlice";
 
 const persistConfig = {
   key: "healthbell-state",
@@ -23,10 +22,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   medicines: medicinesReducer,
-  auth: authReducer,
 });
 
-// تعريف Rootstate اعتمادًا على rootReducer وليس على store
 export type Rootstate = ReturnType<typeof rootReducer>;
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -11,7 +11,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator<TabsParamList>();
 
-export default function TabsNavigator() {
+const TabsNavigator = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -57,3 +57,4 @@ export default function TabsNavigator() {
     </Tab.Navigator>
   );
 }
+export default TabsNavigator;

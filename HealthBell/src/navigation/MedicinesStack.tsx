@@ -9,7 +9,7 @@ const Stack = createStackNavigator<MedicinesStackParamList>();
 
 const MedicinesStack = () => {
   return (
-    <Stack.Navigator initialRouteName="MedicinesList">
+    <Stack.Navigator>
       <Stack.Screen
         name="MedicinesList"
         component={MedicinesListScreen}

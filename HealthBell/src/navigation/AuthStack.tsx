@@ -9,7 +9,7 @@ const Stack = createStackNavigator<AuthStackParamList>();
 
 export default function AuthStack() {
   return (
-    <Stack.Navigator initialRouteName="Login">
+    <Stack.Navigator>
       <Stack.Screen
         name="Login"
         component={LoginScreen}

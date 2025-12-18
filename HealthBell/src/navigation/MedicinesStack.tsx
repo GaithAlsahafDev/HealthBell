@@ -7,7 +7,7 @@ import MedicineDetailScreen from '../screens/medicines/MedicineDetailScreen';
 
 const Stack = createStackNavigator<MedicinesStackParamList>();
 
-export default function MedicinesStack() {
+const MedicinesStack = () => {
   return (
     <Stack.Navigator initialRouteName="MedicinesList">
       <Stack.Screen
@@ -28,3 +28,4 @@ export default function MedicinesStack() {
     </Stack.Navigator>
   );
 }
+export default MedicinesStack;

@@ -37,7 +37,7 @@ export default function LoginScreen() {
           Alert.alert('Login Error', error.message, [
             {
               text: 'OK',
-              onPress: () => navigation.navigate('Register'),
+              onPress: () => navigation.navigate('Register', { email }),
             },
           ]);
         } else {

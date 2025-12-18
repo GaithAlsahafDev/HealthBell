@@ -6,6 +6,7 @@ import MyTextInput from '../components/MyTextInput';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import type { AuthStackNavProps } from '../navigation/types';
+import { useRoute } from '@react-navigation/native';
 import { useAppDispatch } from '../hooks/reduxHooks';
 import { setUser } from '../store/store-slices/AuthSlice';
 import { useFormik } from 'formik';
@@ -23,6 +24,8 @@ export default function RegisterScreen() {
   const passwordInputRef = useRef<TextInput | null>(null);
   const { top } = useSafeAreaInsets();
   const containerStyle = { paddingTop: top };
+
+  const route = useRoute<AuthStackNavProps<'Register'>['route']>();
 
   const handleRegister = async (email: string, password: string) => {
     try {
@@ -47,7 +50,7 @@ export default function RegisterScreen() {
     errors,
     touched,
   } = useFormik({
-    initialValues: { email: '', password: '' },
+    initialValues: { email: route.params?.email ?? '', password: '' },
     validationSchema: schema,
     onSubmit: values => handleRegister(values.email, values.password),
   });

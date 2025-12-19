@@ -1,44 +1,22 @@
 // src/screens/medicines/MedicinesListScreen.tsx
-import React, { useEffect } from 'react';
-import { View, FlatList, Alert } from 'react-native';
+import React from 'react';
+import { View, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { MedicinesStackNavProps } from '../../navigation/types';
 import MedicineCard from '../../components/MedicineCard';
 import Button from '../../components/Button';
-import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
+import { useAppSelector } from '../../hooks/reduxHooks';
 import MyText from '../../components/MyText';
-import { medicinesApi } from '../../services/medicinesApi';
-import { add, clearAll } from '../../store/store-slices/MedicinesSlice';
-import { auth } from '../../config/firebase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function MedicinesListScreen() {
   const navigation = useNavigation<MedicinesStackNavProps<'MedicinesList'>['navigation']>();
-  const dispatch = useAppDispatch();
 
   const cached = useAppSelector(s => s.medicines) as Medicine[];
-  const uid = auth.currentUser?.uid;
 
   const { bottom } = useSafeAreaInsets();
   const containerStyle = { paddingBottom: bottom };
-
-  useEffect(() => {
-    const load = async () => {
-      if (!uid) return;
-
-      try {
-        const data = await medicinesApi.getAll(uid);
-        dispatch(clearAll());
-        data.forEach(item => dispatch(add(item)));
-      } catch (error) {
-        Alert.alert('Error', 'Failed to load medicines. Please check your connection.');
-      }
-    };
-
-    const unsubscribe = navigation.addListener('focus', load);
-    return unsubscribe;
-  }, [navigation, dispatch, uid]);
 
   const list: Medicine[] = cached;
 

@@ -138,11 +138,6 @@ export default function TodayScreen() {
 }
 
 /* ---------- helpers ---------- */
-function labelFor(s: 'upcoming' | 'taken' | 'missed') {
-  if (s === 'taken') return 'Taken';
-  if (s === 'missed') return 'Missed';
-  return 'Upcoming';
-}
 
 function formatDateTime(d: Date) {
   return new Intl.DateTimeFormat(undefined, {

@@ -1,11 +1,11 @@
 // src/services/api/medicinesApi.ts
-import { collection, getDocs, setDoc, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, setDoc, doc, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 
-const getMedicinesCollection = (uid: string) =>
-  collection(db, "users", uid, "medicines");
+const getMedicinesCollection = (uid: string) => collection(db, "users", uid, "medicines");
 
 export const medicinesApi = {
+  //==============================================================================
   async getAll(uid: string): Promise<Medicine[]> {
     const colRef = getMedicinesCollection(uid);
     const snapshot = await getDocs(colRef);
@@ -14,21 +14,23 @@ export const medicinesApi = {
       const data = d.data() as Medicine;
       return {
         ...data,
-        id: data.id ?? d.id,
+        id: d.id,
       };
     });
 
     return items;
   },
-
+  //==============================================================================
   async create(uid: string, m: Medicine): Promise<Medicine> {
-    const id = m.id ?? `m_${Date.now()}`;
-    const docRef = doc(db, "users", uid, "medicines", id);
-    const payload: Medicine = { ...m, id };
-    await setDoc(docRef, payload);
-    return payload;
-  },
+    const colRef = getMedicinesCollection(uid);
+    const docRef = await addDoc(colRef, m);
 
+    return {
+      ...m,
+      id: docRef.id,
+    };
+  },
+  //==============================================================================
   async update(uid: string, m: Medicine): Promise<Medicine> {
     if (!m.id) {
       throw new Error("Cannot update medicine without id");
@@ -37,7 +39,7 @@ export const medicinesApi = {
     await setDoc(docRef, m, { merge: true });
     return m;
   },
-
+  //==============================================================================
   async remove(uid: string, id: string): Promise<{ success: boolean }> {
     const docRef = doc(db, "users", uid, "medicines", id);
     await deleteDoc(docRef);

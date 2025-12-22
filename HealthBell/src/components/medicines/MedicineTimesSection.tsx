@@ -18,25 +18,9 @@ type Props = {
   touched?: FormikTouched<MedicineFormValues>;
 };
 
-export default function MedicineTimesSection({ values, setFieldValue, errors, touched }: Props) {
+const MedicineTimesSection = ({ values, setFieldValue, errors, touched }: Props) => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [timePickerValue, setTimePickerValue] = useState(new Date());
-
-  const addTime = () => {
-    const trimmed = values.newTime.trim();
-    if (!trimmed) return;
-
-    const isValid = /^([01]\d|2[0-3]):[0-5]\d$/.test(trimmed);
-    if (!isValid) {
-      Alert.alert('Invalid time', 'Please enter time in HH:MM format, e.g. 09:00');
-      return;
-    }
-
-    if (!values.times.includes(trimmed as HHmm)) {
-      setFieldValue("times", [...values.times, trimmed as HHmm]);
-    }
-    setFieldValue("newTime", '');
-  };
 
   const removeTime = (t: string) => {
     setFieldValue("times", values.times.filter(x => x !== t));
@@ -51,16 +35,8 @@ export default function MedicineTimesSection({ values, setFieldValue, errors, to
           accessibilityRole="button"
         >
           <MyText className="text-gray-900">
-            {values.newTime || 'Select time'}
+            Select time
           </MyText>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={addTime}
-          className="h-11 px-3 rounded-[10px] bg-sky-500 items-center justify-center flex-row"
-          accessibilityRole="button"
-        >
-          <MaterialCommunityIcons name="plus" size={18} color="#fff" />
-          <MyText className="text-white font-bold ml-1">Add</MyText>
         </TouchableOpacity>
       </View>
 
@@ -78,7 +54,10 @@ export default function MedicineTimesSection({ values, setFieldValue, errors, to
             setTimePickerValue(selectedDate);
             const hours = selectedDate.getHours().toString().padStart(2, '0');
             const minutes = selectedDate.getMinutes().toString().padStart(2, '0');
-            setFieldValue("newTime", `${hours}:${minutes}`);
+            const picked = `${hours}:${minutes}`;
+            if (!values.times.includes(picked as HHmm)) {
+              setFieldValue("times", [...values.times, picked as HHmm]);
+            }
           }}
         />
       )}
@@ -103,3 +82,4 @@ export default function MedicineTimesSection({ values, setFieldValue, errors, to
     </Field>
   );
 }
+export default MedicineTimesSection;

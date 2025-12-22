@@ -84,7 +84,7 @@ function buildMedicinePayload(vals: MedicineFormValues, editing?: Medicine): Med
   return payload;
 }
 
-export default function MedicineForm({ editing, editId, onSubmit, onCancel }: MedicineFormProps) {
+const MedicineForm = ({ editing, editId, onSubmit, onCancel }: MedicineFormProps) => {
 
   const doseAmountRef = useRef<TextInput | null>(null);
   const doseTextRef = useRef<TextInput | null>(null);
@@ -190,3 +190,4 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
     </ScrollView>
   );
 }
+export default MedicineForm;

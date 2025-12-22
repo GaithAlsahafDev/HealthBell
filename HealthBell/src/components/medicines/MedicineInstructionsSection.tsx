@@ -15,7 +15,7 @@ type Props = {
   touched?: FormikTouched<MedicineFormValues>;
 };
 
-export default function MedicineInstructionsSection({ values, setFieldValue, errors, touched }: Props) {
+const MedicineInstructionsSection = ({ values, setFieldValue, errors, touched }: Props) => {
   return (
     <Field label="Instructions (optional)">
       <InstructionsPicker
@@ -29,3 +29,4 @@ export default function MedicineInstructionsSection({ values, setFieldValue, err
     </Field>
   );
 }
+export default MedicineInstructionsSection;

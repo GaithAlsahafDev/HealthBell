@@ -5,8 +5,7 @@ import { Picker } from '@react-native-picker/picker';
 import MyText from '../MyText';
 import MyTextInput from '../MyTextInput';
 import { Field } from './MedicineFormUI';
-import { UNITS, type Unit } from '../../types/medicine';
-import type { MedicineFormValues } from '../../types/medicine';
+import { UNITS, type Unit, type MedicineFormValues } from '../../types/medicine';
 import type { FormikErrors, FormikTouched } from 'formik';
 
 type Props = {
@@ -21,7 +20,7 @@ type Props = {
   doseTextRef?: React.RefObject<TextInput | null>;
 };
 
-export default function MedicineDosageSection({ values, setFieldValue, errors, touched, doseAmountRef, doseTextRef }: Props) {
+const MedicineDosageSection = ({ values, setFieldValue, errors, touched, doseAmountRef, doseTextRef }: Props) => {
   return (
     <Field label="Dosage">
       <View className="flex-row items-center">
@@ -65,3 +64,4 @@ export default function MedicineDosageSection({ values, setFieldValue, errors, t
     </Field>
   );
 }
+export default MedicineDosageSection;

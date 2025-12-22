@@ -4,7 +4,6 @@ import { View, TouchableOpacity } from 'react-native';
 import MyText from '../MyText';
 import { Field, Chip } from './MedicineFormUI';
 import type { MedicineFormValues } from '../../types/medicine';
-import type { FormikErrors, FormikTouched } from 'formik';
 
 const WEEKDAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as const;
 
@@ -14,11 +13,9 @@ type Props = {
     field: K,
     value: MedicineFormValues[K]
   ) => void;
-  errors?: FormikErrors<MedicineFormValues>;
-  touched?: FormikTouched<MedicineFormValues>;
 };
 
-export default function MedicineDaysSection({ values, setFieldValue, errors, touched }: Props) {
+const MedicineDaysSection = ({ values, setFieldValue }: Props) => {
 
   const toggleDay = (d: typeof WEEKDAYS[number]) => {
     if (values.everyDay) return;
@@ -71,3 +68,4 @@ export default function MedicineDaysSection({ values, setFieldValue, errors, tou
     </Field>
   );
 }
+export default MedicineDaysSection;

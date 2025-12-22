@@ -71,12 +71,7 @@ function buildMedicinePayload(vals: MedicineFormValues, editing?: Medicine): Med
   let doseTextFinal: string | null = null;
   if (trimmedDoseText.length > 0) {
     doseTextFinal = trimmedDoseText;
-  } else if (trimmedAmount.length > 0) {
-    doseTextFinal = `${trimmedAmount} ${vals.doseUnit}`;
   }
-
-  const hasTimes = vals.times.length > 0;
-  const hasDoseAmount = trimmedAmount.length > 0;
 
   const normalizedInstructions: MedicineInstruction | null =
     vals.instructions && vals.instructions.length > 0
@@ -86,10 +81,11 @@ function buildMedicinePayload(vals: MedicineFormValues, editing?: Medicine): Med
   const payload: Medicine = {
     id: editing?.id ?? `m_${Date.now()}`,
     name: trimmedName,
-    ...(hasDoseAmount ? { doseAmount: trimmedAmount, doseUnit: vals.doseUnit } : {}),
+    doseAmount: trimmedAmount,
+    doseUnit: vals.doseUnit,
     ...(doseTextFinal !== null ? { doseText: doseTextFinal } : {}),
-    ...(hasTimes ? { times: vals.times } : {}),
-    ...(trimmedCourseStart.length > 0 ? { courseStart: trimmedCourseStart } : {}),
+    times: vals.times,
+    courseStart: trimmedCourseStart,
     ...(trimmedCourseEnd.length > 0 ? { courseEnd: trimmedCourseEnd } : {}),
     ...(normalizedInstructions !== "none"
       ? { instructions: normalizedInstructions }
@@ -142,7 +138,7 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
       <>
         <MyText className="text-[20px] font-bold mb-3 text-gray-900">{editId ? 'Edit medicine' : 'Add medicine'}</MyText>
 
-        {/* اسم الدواء - إجباري */}
+        {/* Medicine name – required */}
         <Field label="Medicine name *">
           <MyTextInput
             value={values.name}
@@ -160,7 +156,7 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
           ) : null}
         </Field>
 
-        {/* الجرعة */}
+        {/* Dose */}
         <MedicineDosageSection
           values={values}
           setFieldValue={setFieldValue}
@@ -170,7 +166,7 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
           doseTextRef={doseTextRef}
         />
 
-        {/* الأوقات */}
+        {/* Times */}
         <MedicineTimesSection
           values={values}
           setFieldValue={setFieldValue}
@@ -178,10 +174,10 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
           touched={touched}
         />
 
-        {/* الأيام */}
+        {/* Days */}
         <MedicineDaysSection values={values} setFieldValue={setFieldValue} />
 
-        {/* المدة */}
+        {/* Duration */}
         <MedicineDurationSection
           values={values}
           setFieldValue={setFieldValue}
@@ -189,10 +185,10 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
           touched={touched}
         />
 
-        {/* التعليمات */}
+        {/* Instructions */}
         <MedicineInstructionsSection values={values} setFieldValue={setFieldValue} />
 
-        {/* أزرار الإجراء */}
+        {/* Action buttons */}
         <View className="flex-row gap-3 mt-2 mb-3">
           <TouchableOpacity className="flex-1 h-12 rounded-[10px] items-center justify-center flex-row gap-2 bg-sky-500" onPress={() => handleSubmit()} accessibilityRole="button">
             <MyText className="text-white font-bold">{editId ? 'Save changes' : 'Add medicine'}</MyText>
@@ -202,18 +198,6 @@ export default function MedicineForm({ editing, editId, onSubmit, onCancel }: Me
             <MyText className="text-gray-900 font-bold">Cancel</MyText>
           </TouchableOpacity>
         </View>
-
-        {/* زر اختياري: مسح باركود */}
-        <TouchableOpacity
-          className="flex-row gap-2 h-12 rounded-[10px] items-center justify-center bg-white border border-sky-500"
-          onPress={() => {
-            Alert.alert('Scan barcode', 'Connect to camera flow here.');
-          }}
-          accessibilityRole="button"
-        >
-          <MaterialCommunityIcons name="barcode-scan" size={18} color="#0EA5E9" />
-          <MyText className="text-sky-500 font-bold">Scan barcode</MyText>
-        </TouchableOpacity>
 
         <View className="h-6" />
       </>

@@ -1,4 +1,4 @@
-// src/services/api/medicinesApi.ts
+// src/services/medicinesApi.ts
 import { collection, getDocs, setDoc, doc, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 

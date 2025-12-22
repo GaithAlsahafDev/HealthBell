@@ -1,15 +1,11 @@
 // src/components/medicines/MedicineFormUI.tsx
 import React from 'react';
-import {
-  View, TouchableOpacity
-} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 import MyText from '../MyText';
 
 export const UNITS = ['mg', 'ml', 'g', 'mcg', 'drops', 'tablet', 'capsule'] as const;
 export type Unit = (typeof UNITS)[number];
-;
 
-/* ---------- عناصر مساعدة ---------- */
 export function Field({
   label,
   children,

@@ -4,7 +4,7 @@ import { View, TouchableOpacity } from 'react-native';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import MyText from '../MyText';
 import { Field } from './MedicineFormUI';
-import type { MedicineFormValues } from './MedicineForm';
+import type { MedicineFormValues } from '../../types/medicine';
 import type { FormikErrors, FormikTouched } from 'formik';
 
 type Props = {

@@ -1,18 +1,18 @@
 // src/components/medicines/MedicineForm.tsx
 import React, { useRef } from 'react';
 import {View, TextInput, ScrollView, TouchableOpacity, Alert} from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MyText from '../MyText';
 import MyTextInput from '../MyTextInput';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Field, type Unit } from './MedicineFormUI';
+import { Field } from './MedicineFormUI';
 
 import MedicineDosageSection from './MedicineDosageSection';
 import MedicineTimesSection from './MedicineTimesSection';
 import MedicineDaysSection from './MedicineDaysSection';
 import MedicineDurationSection from './MedicineDurationSection';
 import MedicineInstructionsSection from './MedicineInstructionsSection';
+import { MedicineFormValues } from '../../types/medicine';
 
 const schema = Yup.object({
   name: Yup.string().trim().required('Medicine name is required'),
@@ -45,20 +45,6 @@ type MedicineFormProps = {
   editId?: string;
   onSubmit: (payload: Medicine) => void;
   onCancel: () => void;
-};
-
-export type MedicineFormValues = {
-  name: string;
-  doseAmount: string;
-  doseUnit: Unit;
-  doseText: string;
-  times: HHmm[];
-  newTime: string;
-  everyDay: boolean;
-  days: string[];
-  courseStart: string;
-  courseEnd: string;
-  instructions: string;
 };
 
 function buildMedicinePayload(vals: MedicineFormValues, editing?: Medicine): Medicine {

@@ -4,8 +4,9 @@ import { View, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import MyText from '../MyText';
 import MyTextInput from '../MyTextInput';
-import { Field, UNITS, type Unit } from './MedicineFormUI';
-import type { MedicineFormValues } from './MedicineForm';
+import { Field } from './MedicineFormUI';
+import { UNITS, type Unit } from '../../types/medicine';
+import type { MedicineFormValues } from '../../types/medicine';
 import type { FormikErrors, FormikTouched } from 'formik';
 
 type Props = {

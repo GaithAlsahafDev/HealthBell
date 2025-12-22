@@ -2,10 +2,8 @@
 import React from 'react';
 import {View, TouchableOpacity} from 'react-native';
 import MyText from '../MyText';
-
-export const UNITS = ['mg', 'ml', 'g', 'mcg', 'drops', 'tablet', 'capsule'] as const;
-export type Unit = (typeof UNITS)[number];
-
+//===========================================================================
+// Field Component
 export function Field({
   label,
   children,
@@ -25,7 +23,8 @@ export function Field({
     </View>
   );
 }
-
+//===========================================================================
+// Chip Component
 export function Chip({
   label, active, onPress, disabled
 }: { label: string; active: boolean; onPress: () => void; disabled?: boolean }) {
@@ -40,7 +39,8 @@ export function Chip({
     </TouchableOpacity>
   );
 }
-
+//===========================================================================
+// InstructionsPicker Component
 export function InstructionsPicker({
   value, onChange
 }: { value: string; onChange: (v: string) => void }) {

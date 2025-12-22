@@ -3,7 +3,7 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import MyText from '../MyText';
 import { Field, Chip } from './MedicineFormUI';
-import type { MedicineFormValues } from './MedicineForm';
+import type { MedicineFormValues } from '../../types/medicine';
 import type { FormikErrors, FormikTouched } from 'formik';
 
 const WEEKDAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as const;

@@ -1,7 +1,7 @@
 // src/components/medicines/MedicineInstructionsSection.tsx
 import React from 'react';
 import { Field, InstructionsPicker } from './MedicineFormUI';
-import type { MedicineFormValues } from './MedicineForm';
+import type { MedicineFormValues } from '../../types/medicine';
 import MyText from '../MyText';
 import type { FormikErrors, FormikTouched } from 'formik';
 

@@ -39,8 +39,8 @@ export default function AddEditMedicineScreen() {
         await medicinesApi.update(uid, payload);
         dispatch(update(payload));
       } else {
-        await medicinesApi.create(uid, payload);
-        dispatch(add(payload));
+        const created = await medicinesApi.create(uid, payload);
+        dispatch(add(created));
       }
 
       console.log(editId ? 'UPDATE MEDICINE' : 'CREATE MEDICINE', payload);

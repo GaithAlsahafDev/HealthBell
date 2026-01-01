@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
   const email = auth.currentUser?.email;
+  const uid = auth.currentUser?.uid;
 
   const { top } = useSafeAreaInsets();
   const containerStyle = { paddingTop: top };
@@ -33,7 +34,7 @@ export default function ProfileScreen() {
     <View className="flex-1 bg-white" style={containerStyle}>
       <View className="flex-1 px-4">
         <View className="flex-1 items-center justify-start gap-5 mt-[60px]">
-          <ProfileCard name={email ?? ''} email={email ?? ''} />
+          <ProfileCard name={email ?? ''} email={email ?? ''} uid={uid ?? ''} />
 
           <View className="w-4/5 max-w-[340px] mt-3">
             <View className="w-full">

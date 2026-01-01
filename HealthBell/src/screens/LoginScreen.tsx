@@ -28,7 +28,7 @@ export default function LoginScreen() {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       if (error instanceof FirebaseError) {
-        if (error.code === 'auth/user-not-found') {
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
           Alert.alert('Login Error', error.message, [
             {
               text: 'OK',

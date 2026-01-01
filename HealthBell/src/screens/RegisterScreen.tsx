@@ -15,10 +15,14 @@ import { FirebaseError } from 'firebase/app';
 const schema = Yup.object({
   email: Yup.string().email('Invalid email').required('Required'),
   password: Yup.string().min(6, 'Min 6 chars').required('Required'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password')], 'Passwords must match')
+    .required('Required'),
 });
 
 export default function RegisterScreen() {
   const passwordInputRef = useRef<TextInput | null>(null);
+  const confirmPasswordInputRef = useRef<TextInput | null>(null);
   const { top } = useSafeAreaInsets();
   const containerStyle = { paddingTop: top };
 
@@ -46,7 +50,7 @@ export default function RegisterScreen() {
     errors,
     touched,
   } = useFormik({
-    initialValues: { email: route.params?.email ?? '', password: '' },
+    initialValues: { email: route.params?.email ?? '', password: '', confirmPassword: '' },
     validationSchema: schema,
     onSubmit: values => handleRegister(values.email, values.password),
   });
@@ -100,12 +104,29 @@ export default function RegisterScreen() {
               autoComplete='new-password'
               onBlur={handleBlur('password')}
               secureTextEntry
-              returnKeyType="done"
-              onSubmitEditing={() => handleSubmit()}
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                confirmPasswordInputRef.current?.focus();
+              }}
             />
 
             {touched.password && errors.password ? (
               <MyText className="text-red-500 text-xs">{errors.password}</MyText>
+            ) : null}
+
+            <MyTextInput
+              ref={confirmPasswordInputRef}
+              placeholder="Confirm password"
+              value={values.confirmPassword}
+              onChangeText={handleChange('confirmPassword')}
+              onBlur={handleBlur('confirmPassword')}
+              secureTextEntry
+              returnKeyType="done"
+              onSubmitEditing={() => handleSubmit()}
+            />
+
+            {touched.confirmPassword && errors.confirmPassword ? (
+              <MyText className="text-red-500 text-xs">{errors.confirmPassword}</MyText>
             ) : null}
 
             <Pressable

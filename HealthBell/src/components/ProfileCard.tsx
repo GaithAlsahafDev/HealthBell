@@ -19,8 +19,8 @@ export default function ProfileCard({ name, email, uid }: Props) {
       </View>
       <View className="w-full">
         <View className="mb-3">
-          <MyText className="text-[12px] text-gray-500 mb-1">Name</MyText>
-          <MyText className="text-[16px] font-bold text-gray-900">{displayName}</MyText>
+          <MyText className="text-[12px] text-gray-500 mb-1">Username</MyText>
+          <MyText className="text-[16px] text-gray-900">{displayName}</MyText>
         </View>
 
         <View className="mb-3">

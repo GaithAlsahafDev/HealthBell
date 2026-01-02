@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import TabsNavigator from '../navigation/TabsNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+//import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { persistor,store } from "../store/store";
 import { PersistGate } from "redux-persist/integration/react";
@@ -19,7 +19,7 @@ import "../../global.css";
 
 import { useFonts } from "expo-font";
 
-const queryClient = new QueryClient();
+// const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
 
@@ -59,9 +59,9 @@ export default function Root() {
       <Provider store={store}>
         <PersistGate persistor={persistor}>
         <NavigationContainer>
-          <QueryClientProvider client={queryClient}>
+          {/* <QueryClientProvider client={queryClient}> */}
             {user ? <TabsNavigator /> : <AuthStack />}
-          </QueryClientProvider>
+          {/* </QueryClientProvider> */}
         </NavigationContainer>
         </PersistGate>
       </Provider>

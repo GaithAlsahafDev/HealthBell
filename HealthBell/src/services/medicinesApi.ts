@@ -23,7 +23,8 @@ export const medicinesApi = {
   //==============================================================================
   async create(uid: string, m: Medicine): Promise<Medicine> {
     const colRef = getMedicinesCollection(uid);
-    const docRef = await addDoc(colRef, m);
+    const { id: _ignored, ...data } = m;
+    const docRef = await addDoc(colRef, data);
 
     return {
       ...m,
@@ -35,8 +36,9 @@ export const medicinesApi = {
     if (!m.id) {
       throw new Error("Cannot update medicine without id");
     }
-    const docRef = doc(db, "users", uid, "medicines", m.id);
-    await setDoc(docRef, m, { merge: true });
+    const { id, ...data } = m;
+    const docRef = doc(db, "users", uid, "medicines", id);
+    await setDoc(docRef, data, { merge: true });
     return m;
   },
   //==============================================================================

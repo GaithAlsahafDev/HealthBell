@@ -112,6 +112,7 @@ const MedicineDetailScreen = () => {
         <Row label="Schedule" value={everyDayText} />
         <Row label="Days" value={daysText} />
         {med.notes ? <Row label="Notes" value={med.notes} /> : null}
+        <Row label="Medicine ID" value={med.id} />
       </View>
 
       {/* Actions */}

@@ -57,6 +57,9 @@ export default function HealthTipsScreen() {
         source={{ uri: 'https://www.healthline.com/health' }}
         startInLoadingState
         onNavigationStateChange={(nav) => setCanGoBack(Boolean(nav.canGoBack))}
+        sharedCookiesEnabled={true}
+        thirdPartyCookiesEnabled={true}
+        domStorageEnabled={true}
         className="flex-1"
       />
     </View>

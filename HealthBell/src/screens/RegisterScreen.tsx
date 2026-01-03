@@ -11,6 +11,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FirebaseError } from 'firebase/app';
+import Button from '../components/Button';
 
 const schema = Yup.object({
   email: Yup.string().email('Invalid email').required('Required'),
@@ -129,12 +130,13 @@ export default function RegisterScreen() {
               <MyText className="text-red-500 text-xs">{errors.confirmPassword}</MyText>
             ) : null}
 
-            <Pressable
-              className="bg-sky-500 py-3 rounded-xl mt-2 items-center"
-              onPress={() => handleSubmit()}
-            >
-              <MyText className="text-white font-semibold text-base">Register</MyText>
-            </Pressable>
+            <View className="mt-2">
+              <Button
+                label="Register"
+                variant="primary"
+                onPress={() => handleSubmit()}
+              />
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -11,6 +11,7 @@ import * as Yup from 'yup';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FirebaseError } from 'firebase/app';
 import { useNavigation } from '@react-navigation/native';
+import Button from '../components/Button';
 
 const schema = Yup.object({
   email: Yup.string().email('Invalid email').required('Required'),
@@ -117,12 +118,13 @@ export default function LoginScreen() {
                 <MyText className="text-red-500 text-xs">{errors.password}</MyText>
               ) : null}
 
-              <Pressable
-                className="bg-sky-500 py-3 rounded-xl mt-2 items-center"
-                onPress={() => handleSubmit()}
-              >
-                <MyText className="text-white font-semibold text-base">Login</MyText>
-              </Pressable>
+              <View className="mt-2">
+                <Button
+                  label="Login"
+                  variant="primary"
+                  onPress={() => handleSubmit()}
+                />
+              </View>
             </View>
 
             <View className="items-center mt-6">

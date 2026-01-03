@@ -28,7 +28,7 @@ export default function Root() {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const [fontLoaded] = useFonts({
-    PoppinsBlack: require("../../assets/fonts/Poppins-Black.ttf"),
+    HandleeRegular: require("../../assets/fonts/Handlee-Regular.ttf"),
   });
 
   useEffect(() => {

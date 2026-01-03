@@ -13,6 +13,7 @@ import MedicineDaysSection from './MedicineDaysSection';
 import MedicineDurationSection from './MedicineDurationSection';
 import MedicineInstructionsSection from './MedicineInstructionsSection';
 import { MedicineFormValues, Unit } from '../../types/medicine';
+import Button from '../Button';
 
 const schema = Yup.object({
   name: Yup.string().trim().required('Medicine name is required'),
@@ -176,13 +177,21 @@ const MedicineForm = ({ editing, editId, onSubmit, onCancel }: MedicineFormProps
 
         {/* Action buttons */}
         <View className="flex-row gap-3 mt-2 mb-3">
-          <TouchableOpacity className="flex-1 h-12 rounded-[10px] items-center justify-center flex-row gap-2 bg-sky-500" onPress={() => handleSubmit()} accessibilityRole="button">
-            <MyText className="text-white font-bold">{editId ? 'Save changes' : 'Add medicine'}</MyText>
-          </TouchableOpacity>
+          <View className="flex-1">
+            <Button
+              label={editId ? 'Save changes' : 'Add medicine'}
+              variant="primary"
+              onPress={() => handleSubmit()}
+            />
+          </View>
 
-          <TouchableOpacity className="flex-1 h-12 rounded-[10px] items-center justify-center flex-row gap-2 bg-gray-100" onPress={onCancel} accessibilityRole="button">
-            <MyText className="text-gray-900 font-bold">Cancel</MyText>
-          </TouchableOpacity>
+          <View className="flex-1">
+            <Button
+              label="Cancel"
+              variant="outline"
+              onPress={onCancel}
+            />
+          </View>
         </View>
 
         <View className="h-6" />

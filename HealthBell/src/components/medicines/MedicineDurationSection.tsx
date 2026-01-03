@@ -1,6 +1,6 @@
 // src/components/medicines/MedicineDurationSection.tsx
 import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Modal, Platform } from 'react-native';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import MyText from '../MyText';
 import { Field } from './MedicineFormUI';
@@ -20,13 +20,29 @@ type Props = {
 const MedicineDurationSection = ({ values, setFieldValue, errors, touched }: Props) => {
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
+  const [tempDate, setTempDate] = useState<Date>(new Date());
+
+  const toISODate = (d: Date) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const confirmDate = (field: "courseStart" | "courseEnd") => {
+    const iso = toISODate(tempDate);
+    setFieldValue(field, iso);
+    field === "courseStart" ? setShowStartPicker(false) : setShowEndPicker(false);
+  };
 
   return (
     <Field label="Treatment duration *">
       <View className="flex-row items-center">
-        {/* Start Date Picker */}
         <TouchableOpacity
-          onPress={() => setShowStartPicker(true)}
+          onPress={() => {
+            setTempDate(values.courseStart ? new Date(values.courseStart) : new Date());
+            setShowStartPicker(true);
+          }}
           className="flex-1 mr-2 h-11 border border-gray-200 rounded-[10px] px-3 bg-white justify-center"
           accessibilityRole="button"
         >
@@ -34,9 +50,12 @@ const MedicineDurationSection = ({ values, setFieldValue, errors, touched }: Pro
             {values.courseStart || 'Start YYYY-MM-DD'}
           </MyText>
         </TouchableOpacity>
-        {/* End Date Picker */}
+
         <TouchableOpacity
-          onPress={() => setShowEndPicker(true)}
+          onPress={() => {
+            setTempDate(values.courseEnd ? new Date(values.courseEnd) : new Date());
+            setShowEndPicker(true);
+          }}
           className="flex-1 h-11 border border-gray-200 rounded-[10px] px-3 bg-white justify-center"
           accessibilityRole="button"
         >
@@ -46,31 +65,65 @@ const MedicineDurationSection = ({ values, setFieldValue, errors, touched }: Pro
         </TouchableOpacity>
       </View>
 
-      {showStartPicker && (
+      {(showStartPicker || showEndPicker) && Platform.OS === 'ios' && (
+        <Modal transparent animationType="slide">
+          <View className="flex-1 justify-end bg-black/40">
+            <View className="bg-white p-4 rounded-t-2xl">
+              <DateTimePicker
+                value={tempDate}
+                mode="date"
+                display="spinner"
+                onChange={(_, d) => d && setTempDate(d)}
+              />
+
+              <View className="flex-row gap-3 mt-3">
+                <TouchableOpacity
+                  className="flex-1 h-11 items-center justify-center rounded-lg bg-gray-100"
+                  onPress={() => {
+                    setShowStartPicker(false);
+                    setShowEndPicker(false);
+                  }}
+                >
+                  <MyText>Cancel</MyText>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="flex-1 h-11 items-center justify-center rounded-lg bg-sky-500"
+                  onPress={() =>
+                    confirmDate(showStartPicker ? "courseStart" : "courseEnd")
+                  }
+                >
+                  <MyText className="text-white font-bold">Confirm</MyText>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {Platform.OS !== 'ios' && showStartPicker && (
         <DateTimePicker
           value={values.courseStart ? new Date(values.courseStart) : new Date()}
           mode="date"
           display="default"
-          onChange={(_event, selectedDate) => {
+          onChange={(_, d) => {
             setShowStartPicker(false);
-            if (selectedDate) {
-              const iso = selectedDate.toISOString().slice(0, 10);
-              setFieldValue("courseStart", iso);
+            if (d) {
+              setFieldValue("courseStart", toISODate(d));
             }
           }}
         />
       )}
 
-      {showEndPicker && (
+      {Platform.OS !== 'ios' && showEndPicker && (
         <DateTimePicker
           value={values.courseEnd ? new Date(values.courseEnd) : new Date()}
           mode="date"
           display="default"
-          onChange={(_event, selectedDate) => {
+          onChange={(_, d) => {
             setShowEndPicker(false);
-            if (selectedDate) {
-              const iso = selectedDate.toISOString().slice(0, 10);
-              setFieldValue("courseEnd", iso);
+            if (d) {
+              setFieldValue("courseEnd", toISODate(d));
             }
           }}
         />

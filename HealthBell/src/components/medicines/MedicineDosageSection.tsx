@@ -1,6 +1,6 @@
 // src/components/medicines/MedicineDosageSection.tsx 
-import React from 'react';
-import { View, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Modal, Platform, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import MyText from '../MyText';
 import MyTextInput from '../MyTextInput';
@@ -21,6 +21,9 @@ type Props = {
 };
 
 const MedicineDosageSection = ({ values, setFieldValue, errors, touched, doseAmountRef, doseTextRef }: Props) => {
+  const [showUnitPicker, setShowUnitPicker] = useState(false);
+  const [tempUnit, setTempUnit] = useState<Unit>(values.doseUnit);
+
   return (
     <Field label="Dosage">
       <View className="flex-row items-center">
@@ -37,16 +40,67 @@ const MedicineDosageSection = ({ values, setFieldValue, errors, touched, doseAmo
           }}
         />
         <View className="w-[110px] h-12 border border-gray-200 rounded-[10px] bg-white justify-center">
-          <Picker
-            selectedValue={values.doseUnit}
-            onValueChange={(value) => setFieldValue("doseUnit", value as Unit)}
-          >
-            {UNITS.map(u => (
-              <Picker.Item key={u} label={u} value={u} />
-            ))}
-          </Picker>
+          {Platform.OS === 'ios' ? (
+            <TouchableOpacity
+              onPress={() => {
+                setTempUnit(values.doseUnit);
+                setShowUnitPicker(true);
+              }}
+              className="h-12 px-3 justify-center"
+              accessibilityRole="button"
+            >
+              <MyText className="text-gray-900 text-[16px]">{values.doseUnit}</MyText>
+            </TouchableOpacity>
+          ) : (
+            <Picker
+              selectedValue={values.doseUnit}
+              onValueChange={(value) => setFieldValue("doseUnit", value as Unit)}
+            >
+              {UNITS.map(u => (
+                <Picker.Item key={u} label={u} value={u} />
+              ))}
+            </Picker>
+          )}
         </View>
       </View>
+
+      {Platform.OS === 'ios' && showUnitPicker && (
+        <Modal transparent animationType="slide">
+          <View className="flex-1 justify-end bg-black/40">
+            <View className="bg-white p-4 rounded-t-2xl">
+              <View className="h-[216px]">
+                <Picker
+                  selectedValue={tempUnit}
+                  onValueChange={(value) => setTempUnit(value as Unit)}
+                >
+                  {UNITS.map(u => (
+                    <Picker.Item key={u} label={u} value={u} />
+                  ))}
+                </Picker>
+              </View>
+
+              <View className="flex-row gap-3 mt-3">
+                <TouchableOpacity
+                  className="flex-1 h-11 items-center justify-center rounded-lg bg-gray-100"
+                  onPress={() => setShowUnitPicker(false)}
+                >
+                  <MyText>Cancel</MyText>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="flex-1 h-11 items-center justify-center rounded-lg bg-sky-500"
+                  onPress={() => {
+                    setFieldValue("doseUnit", tempUnit);
+                    setShowUnitPicker(false);
+                  }}
+                >
+                  <MyText className="text-white font-bold">Confirm</MyText>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
 
       {touched?.doseAmount && errors?.doseAmount ? (
         <MyText className="text-red-500 text-xs mt-1">{errors.doseAmount}</MyText>

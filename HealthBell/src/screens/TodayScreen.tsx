@@ -149,10 +149,17 @@ function formatDateTime(d: Date) {
   }).format(d);
 }
 
+function formatLocalISODate(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function buildDosesFromMedicines(medicines: Medicine[]): Dose[] {
   const today = new Date();
   const weekdayLabel = new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(today);
-  const todayStr = today.toISOString().slice(0, 10);
+  const todayStr = formatLocalISODate(today);
 
   return medicines.flatMap(med => {
     const everyDay = med.everyDay ?? true;

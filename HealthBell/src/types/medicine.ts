@@ -1,3 +1,4 @@
+// /src/types/medicine.ts
 export type MedicineFormValues = {
   name: string;
   doseAmount: string;

@@ -1,6 +1,6 @@
 // src/components/medicines/MedicineForm.tsx
 import React, { useRef } from 'react';
-import {View, TextInput, ScrollView, TouchableOpacity, Alert} from 'react-native';
+import {View, TextInput, ScrollView, TouchableOpacity} from 'react-native';
 import MyText from '../MyText';
 import MyTextInput from '../MyTextInput';
 import { useFormik } from 'formik';
@@ -12,7 +12,7 @@ import MedicineTimesSection from './MedicineTimesSection';
 import MedicineDaysSection from './MedicineDaysSection';
 import MedicineDurationSection from './MedicineDurationSection';
 import MedicineInstructionsSection from './MedicineInstructionsSection';
-import { MedicineFormValues } from '../../types/medicine';
+import { MedicineFormValues, Unit } from '../../types/medicine';
 
 const schema = Yup.object({
   name: Yup.string().trim().required('Medicine name is required'),
@@ -100,8 +100,8 @@ const MedicineForm = ({ editing, editId, onSubmit, onCancel }: MedicineFormProps
   } = useFormik<MedicineFormValues>({
     initialValues: {
       name: editing?.name ?? '',
-      doseAmount: '',
-      doseUnit: 'mg',
+      doseAmount: editing?.doseAmount ?? '',
+      doseUnit: (editing?.doseUnit as Unit) ?? 'mg',
       doseText: editing?.doseText ?? '',
       times: editing?.times ?? ([] as HHmm[]),
       newTime: '',
